@@ -74,66 +74,13 @@ export const reformat = (
    return {
       defaultValue: isDisabled
          ? // since we drop 0's ensure we have at least 4 for disabled
-         `${defaultValue}.`
-            .split('.')
-            .slice(0, 2)
-            .map((v, i) => (i ? v.padEnd(4, '0') : v))
-            .join('.')
+           `${defaultValue}.`
+              .split('.')
+              .slice(0, 2)
+              .map((v, i) => (i ? v.padEnd(4, '0') : v))
+              .join('.')
          : // remove the format specifiers for inputs
-         defaultValue.replace(/,/g, ''),
+           defaultValue.replace(/,/g, ''),
       siDefault: formatBalance.findSi('-'),
    };
 };
-interface EventsData {
-   from: any;
-   to: any;
-   value: any;
-   reason: string | null;
-   sectionmethod: string;
-   txnHash: any;
-   txfee: any;
-   tokenId: number | null;
-   contractAddress: any;
-   timestamp: any;
-}
-export const eventValues = [
-   'from',
-   'to',
-   'value',
-   'reason',
-   'sectionmethod',
-   'txfee',
-   'tokenId',
-   'contractAddress',
-];
-
-export function createAndSaveEvent(eventsDataProps: any): Promise<void> {
-   const {
-      from,
-      to,
-      value,
-      reason,
-      sectionmethod,
-      txnHash,
-      txfee,
-      tokenId,
-      contractAddress,
-      timestamp,
-   } = eventsDataProps;
-   const eventsData: EventsData = {
-      from: from,
-      to: to,
-      value: value,
-      reason: reason,
-      sectionmethod: sectionmethod,
-      txnHash: txnHash,
-      txfee: txfee,
-      tokenId: tokenId ? tokenId : 0,
-      contractAddress: contractAddress,
-      timestamp: timestamp,
-   };
-
-   return new Promise<void>((resolve, reject) => {
-
-   });
-}

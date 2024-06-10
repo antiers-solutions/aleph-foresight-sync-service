@@ -45,27 +45,27 @@ class ContractHelper {
       return Contract;
    }
 
-   getContractHolder = (contractAddress: string) => {
-      return new Promise((resolve, reject) => {
-         try {
-            const query = {
-               contractAddress: contractAddress,
-            };
-            // Contract.find(
-            //    query,
-            //    { allow_filtering: true, raw: true },
-            //    function (err: any, data: any) {
-            //       if (err) {
-            //          reject([]);
-            //       }
-            //       resolve(data ? data[0] : {});
-            //    }
-            // );
-         } catch (error) {
-            reject([]);
-         }
-      });
-   };
+   // getContractHolder = (contractAddress: string) => {
+   //    return new Promise((resolve, reject) => {
+   //       try {
+   //          const query = {
+   //             contractAddress: contractAddress,
+   //          };
+   //          // Contract.find(
+   //          //    query,
+   //          //    { allow_filtering: true, raw: true },
+   //          //    function (err: any, data: any) {
+   //          //       if (err) {
+   //          //          reject([]);
+   //          //       }
+   //          //       resolve(data ? data[0] : {});
+   //          //    }
+   //          // );
+   //       } catch (error) {
+   //          reject([]);
+   //       }
+   //    });
+   // };
 
    async getUri(tokenId: number, account: string, contract: any, api: any) {
       try {
@@ -186,12 +186,12 @@ class ContractHelper {
                   `${deployer.toHuman()}`,
                   `check`
                );
-               if (output && output.toHuman().Ok) {
-                  Data.contract_type = 'ERC-721';
-                  await this.saveToDb(Data);
-               } else {
-                  throw 'Invalid ABI';
-               }
+               // if (output && output.toHuman().Ok) {
+               //    Data.contract_type = 'ERC-721';
+               //    await this.saveToDb(Data);
+               // } else {
+               //    throw 'Invalid ABI';
+               // }
             })
             .catch(() => {
                this.intialiseContract(
@@ -215,10 +215,10 @@ class ContractHelper {
                            1,
                            `check`
                         );
-                        if (output && output.toHuman().Ok) {
-                           Data.contract_type = 'ERC-1155';
-                           await this.saveToDb(Data);
-                        }
+                        // if (output && output.toHuman().Ok) {
+                        //    Data.contract_type = 'ERC-1155';
+                        //    await this.saveToDb(Data);
+                        // }
                      }
                   })
                   .catch((err) => {
@@ -230,9 +230,7 @@ class ContractHelper {
       }
    }
 
-   async saveToDb(Data: any) {
-
-   }
+   //async saveToDb(Data: any) {}
 }
 
 export default new ContractHelper();

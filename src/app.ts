@@ -5,7 +5,6 @@ import { Server } from 'http';
 import morganMiddleware from './config/morganMiddleware';
 import { chainInitialise } from './common/chain.common';
 import Worker from './worker/index';
-import NftToken from './worker/nft';
 import SocketHelper from './helpers/socket.helper';
 import * as cron from 'node-cron';
 declare global {
@@ -39,7 +38,8 @@ class App {
          process.env.PORT ? process.env.PORT : 7200,
          () => {
             console.log(
-               `App listening on the port ${process.env.PORT ? process.env.PORT : 7200
+               `App listening on the port ${
+                  process.env.PORT ? process.env.PORT : 7200
                }`
             );
          }
@@ -64,12 +64,12 @@ class App {
 
    async CronWorker() {
       cron.schedule('*/5 * * * *', async () => {
+         console.log('CronWorker');
       });
    }
 
    async NativeWorker() {
       Worker.Native(await this.api);
-      NftToken.Nft(await this.api);
    }
 
    private socketConnect(serverInstance: Server) {
