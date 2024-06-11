@@ -1,33 +1,37 @@
-module.exports = {
-   fields: {
-      id: {
-         type: 'text',
-         default: 'Transaction',
-      },
-      status: 'text',
-      block_number: 'int',
-      from: 'text',
-      to: 'text',
-      reason: 'text',
-      sectionmethod: 'text',
-      txfee: 'text',
-      value: 'text',
-      txnHash: {
-         type: 'text',
-      },
-      tokenId: {
-         type: 'int',
-         default: null,
-      },
-      contractAddress: {
-         type: 'text',
-         default: '',
-      },
-      count: 'int',
-      timestamp: {
-         type: 'text',
-      },
+import { strict } from 'assert';
+import mongoose, { Document, Schema } from 'mongoose';
+
+export interface ITransaction extends Document {
+   txnId: string;
+   orderId: string;
+   eventId: string;
+   userId: string;
+   amount: number;
+   address: string;
+   fees: number;
+   createdAt: Date;
+   updatedAt: Date;
+}
+
+const transactionSchema: Schema<ITransaction> = new Schema(
+   {
+      txnId: { type: String },
+      orderId: { type: String },
+      eventId: { type: String },
+      userId: { type: String },
+      amount: { type: Number },
+      address: { type: String },
+      fees: { type: Number },
    },
-   key: ['id', 'count'],
-   clustering_order: { count: 'desc' },
-};
+
+   {
+      timestamps: { createdAt: 'createdAt', updatedAt: 'updatedAt' },
+   }
+);
+
+const Transaction = mongoose.model<ITransaction>(
+   'Transaction',
+   transactionSchema
+);
+
+export default Transaction;

@@ -5,6 +5,7 @@ import { Server } from 'http';
 import morganMiddleware from './config/morganMiddleware';
 import { chainInitialise } from './common/chain.common';
 import Worker from './worker/index';
+import dbConnectionHandler from '../src/mongoDB/connection';
 import SocketHelper from './helpers/socket.helper';
 import * as cron from 'node-cron';
 declare global {
@@ -45,6 +46,8 @@ class App {
          }
       );
       this.socketConnect(instance);
+      const isDBconnected = dbConnectionHandler.createDBConnection();
+      if (!isDBconnected) throw new Error('Unable to connect mongodb');
    }
 
    public getServer(): express.Application {

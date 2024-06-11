@@ -27,7 +27,11 @@ class Worker {
                );
                let totalTransactionSize = 0;
                block?.block?.extrinsics?.forEach(
-                  (index: any, extrinsic: any) => {
+                  (
+                     { method: { event, section } }: any,
+                     index: any,
+                     extrinsic: any
+                  ) => {
                      totalTransactionSize = extrinsic.encodedLength;
                      allRecords
                         .filter(
@@ -39,7 +43,7 @@ class Worker {
                            events = events + 1;
                            console.log(
                               'event ============>>>>',
-                              event.toHuman()
+                              event.toHuman().method
                            );
                            if (
                               (event.toHuman().section == 'evm' ||
@@ -55,10 +59,10 @@ class Worker {
                                  await web3.eth.getTransactionReceipt(
                                     event?.data?.transactionHash
                                  );
-                              console.log(
-                                 'with events : ',
-                                 xxxxxxxx.logs[0]?.data
-                              );
+                              // console.log(
+                              //    'with events : ',
+                              //    xxxxxxxx.logs[0]?.data
+                              // );
                               abidecoder.addABI(ContractAbi);
                               const item = abidecoder.decodeLogs(
                                  xxxxxxxx?.logs
