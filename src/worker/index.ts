@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const Web3 = require('web3');
+import saveEvent from '../helpers/event.helper';
 import ContractAbi from '../contracts/contract.abi';
 const abidecoder = require('abi-decoder');
 const web3 = new Web3(process.env.SOCKET_HOST);
@@ -51,26 +52,40 @@ class Worker {
                               (event.toHuman().method == 'Executed' ||
                                  event.toHuman().method == 'Log')
                            ) {
-                              const txData =
-                                 await this.connection?.eth?.getTransaction(
-                                    event?.data?.transactionHash
-                                 );
-                              const xxxxxxxx =
-                                 await web3.eth.getTransactionReceipt(
-                                    event?.data?.transactionHash
-                                 );
-                              // console.log(
-                              //    'with events : ',
-                              //    xxxxxxxx.logs[0]?.data
-                              // );
-                              abidecoder.addABI(ContractAbi);
-                              const item = abidecoder.decodeLogs(
-                                 xxxxxxxx?.logs
+                              console.log(
+                                 'event?.data?.transactionHash ',
+                                 String(event?.data?.transactionHash)
                               );
-                              console.log('yyyyyy : ', item[0]?.events[0]);
-                              console.log('yyyyyy : ', item[0]?.events[1]);
-                              console.log('yyyyyy : ', item[0]?.events[2]);
-                              console.log('yyyyyy : ', item[0]?.events[3]);
+                              console.log(
+                                 'event?.data?.transactionHash ',
+                                 event?.data?.toHuman()
+                              );
+                              if (event?.data?.transactionHash) {
+                                 // const txData =
+                                 //    await this.connection?.eth?.getTransaction(
+                                 //       event?.data?.transactionHash
+                                 //    );
+                                 const xxxxxxxx =
+                                    await web3.eth.getTransactionReceipt(
+                                       event?.data?.transactionHash
+                                    );
+                                 abidecoder.addABI(ContractAbi);
+                                 const item = abidecoder.decodeLogs(
+                                    xxxxxxxx?.logs
+                                 );
+                                 if (
+                                    item[0]?.events[1]?.name == 'event_creator'
+                                 ) {
+                                    console.log('i am here');
+
+                                    saveEvent(
+                                       item,
+                                       event?.data?.transactionHash
+                                    );
+                                 }
+                                 console.log('yyyyyy : ', item[0]?.events[0]);
+                                 console.log('yyyyyy : ', item[0]?.events[1]);
+                              }
                            }
                         });
                   }
