@@ -2,6 +2,7 @@ const cron = require('node-cron');
 const Web3 = require('web3');
 import saveEvent from '../helpers/event.helper';
 import ContractAbi from '../contracts/contract.abi';
+import saveOrder from '../helpers/order.helper';
 const abidecoder = require('abi-decoder');
 const web3 = new Web3(process.env.SOCKET_HOST);
 class Worker {
@@ -73,18 +74,30 @@ class Worker {
                                  const item = abidecoder.decodeLogs(
                                     xxxxxxxx?.logs
                                  );
+
+                                 console.log(
+                                    'item[0]?.events[1]?.name : ',
+                                    item[0]?.events
+                                 );
+
                                  if (
                                     item[0]?.events[1]?.name == 'event_creator'
                                  ) {
-                                    console.log('i am here');
-
                                     saveEvent(
                                        item,
                                        event?.data?.transactionHash
                                     );
                                  }
-                                 console.log('yyyyyy : ', item[0]?.events[0]);
-                                 console.log('yyyyyy : ', item[0]?.events[1]);
+
+                                 if (
+                                    item[0]?.events[2]?.name ==
+                                    'betting_response'
+                                 ) {
+                                    saveOrder(
+                                       item,
+                                       event?.data?.transactionHash
+                                    );
+                                 }
                               }
                            }
                         });

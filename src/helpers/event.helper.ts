@@ -22,13 +22,12 @@ const saveEvent = async (item: any, txnHash: string) => {
          resolver: 'resolver123',
          status: true,
       };
-      console.log('=======> : ', data);
 
       const event = new Events(data);
-      const saved = await event.save();
-      console.log('====<><><><><><===> : ', saved);
+      return await event.save();
    } catch (error: any) {
       console.log('error while saveing in the events : ', error);
+      return error;
    }
 };
 
