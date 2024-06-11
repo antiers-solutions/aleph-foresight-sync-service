@@ -77,22 +77,17 @@ class Worker {
 
                                  console.log(
                                     'item[0]?.events[1]?.name : ',
-                                    item[0]?.events
+                                    item
                                  );
 
-                                 if (
-                                    item[0]?.events[1]?.name == 'event_creator'
-                                 ) {
+                                 if (item[0]?.name == 'event_info') {
                                     saveEvent(
                                        item,
                                        event?.data?.transactionHash
                                     );
                                  }
 
-                                 if (
-                                    item[0]?.events[2]?.name ==
-                                    'betting_response'
-                                 ) {
+                                 if (item[0]?.name == 'response_info') {
                                     saveOrder(
                                        item,
                                        event?.data?.transactionHash
