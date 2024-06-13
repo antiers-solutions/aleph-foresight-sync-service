@@ -95,6 +95,20 @@ class Worker {
                                  }
                               }
                            }
+                           if (
+                              event.toHuman().section == 'ethereum' &&
+                              event.toHuman().method == 'Executed'
+                           ) {
+                              console.log(
+                                 'event$$$$$$$$$$$$$ ',
+                                 event?.data?.toHuman()?.transactionHash
+                              );
+                              const xxxxxxxx =
+                                 await web3.eth.getTransactionReceipt(
+                                    event?.data?.toHuman()?.transactionHash
+                                 );
+                              console.log('1EVENT DATA =========>>>', xxxxxxxx);
+                           }
                         });
                   }
                );

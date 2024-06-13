@@ -4,6 +4,7 @@ export interface IOrder extends Document {
    orderType: boolean;
    amount: number;
    eventId: string;
+   userId: string;
    fees: number;
    txnId: string;
    createdAt: Date;
@@ -15,6 +16,7 @@ const orderSchema: Schema<IOrder> = new Schema(
       orderType: { type: Boolean },
       amount: { type: Number },
       eventId: { type: String },
+      userId: { type: String },
       fees: { type: Number },
       txnId: { type: String },
    },

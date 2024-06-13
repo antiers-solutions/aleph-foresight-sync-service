@@ -201,7 +201,7 @@ const ContractAbi: any = [
             type: 'string',
          },
       ],
-      name: 'claim_rewards',
+      name: 'claimrewards_event',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
@@ -219,7 +219,7 @@ const ContractAbi: any = [
             type: 'uint256',
          },
       ],
-      name: 'edit_bet_closure_time',
+      name: 'edit_bet_closure_time_event',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
@@ -237,7 +237,7 @@ const ContractAbi: any = [
             type: 'uint256',
          },
       ],
-      name: 'edit_event_expiration_time',
+      name: 'edit_expiration_time_event',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
@@ -253,24 +253,6 @@ const ContractAbi: any = [
          },
       ],
       stateMutability: 'view',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-         {
-            internalType: 'string',
-            name: 'result',
-            type: 'string',
-         },
-      ],
-      name: 'event_result',
-      outputs: [],
-      stateMutability: 'nonpayable',
       type: 'function',
    },
    {
@@ -302,6 +284,19 @@ const ContractAbi: any = [
    {
       inputs: [],
       name: 'read_contract_balance',
+      outputs: [
+         {
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
+         },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+   },
+   {
+      inputs: [],
+      name: 'read_creation_fee_event',
       outputs: [
          {
             internalType: 'uint256',
@@ -360,57 +355,6 @@ const ContractAbi: any = [
    },
    {
       inputs: [],
-      name: 'read_event_creation_fee',
-      outputs: [
-         {
-            internalType: 'uint256',
-            name: '',
-            type: 'uint256',
-         },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-      ],
-      name: 'read_event_pool_amount',
-      outputs: [
-         {
-            internalType: 'uint256[]',
-            name: '',
-            type: 'uint256[]',
-         },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-      ],
-      name: 'read_event_result',
-      outputs: [
-         {
-            internalType: 'string',
-            name: '',
-            type: 'string',
-         },
-      ],
-      stateMutability: 'view',
-      type: 'function',
-   },
-   {
-      inputs: [],
       name: 'read_platform_fee',
       outputs: [
          {
@@ -429,13 +373,32 @@ const ContractAbi: any = [
             name: 'event_id',
             type: 'string',
          },
+      ],
+      name: 'read_pool_amount_event',
+      outputs: [
+         {
+            internalType: 'uint256[]',
+            name: '',
+            type: 'uint256[]',
+         },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+   },
+   {
+      inputs: [
+         {
+            internalType: 'string',
+            name: 'event_id',
+            type: 'string',
+         },
          {
             internalType: 'address',
             name: 'user_id',
             type: 'address',
          },
       ],
-      name: 'read_response',
+      name: 'read_response_event',
       outputs: [
          {
             components: [
@@ -475,6 +438,25 @@ const ContractAbi: any = [
             name: 'event_id',
             type: 'string',
          },
+      ],
+      name: 'read_result_event',
+      outputs: [
+         {
+            internalType: 'string',
+            name: '',
+            type: 'string',
+         },
+      ],
+      stateMutability: 'view',
+      type: 'function',
+   },
+   {
+      inputs: [
+         {
+            internalType: 'string',
+            name: 'event_id',
+            type: 'string',
+         },
          {
             internalType: 'uint256',
             name: 'event_expiration_time',
@@ -489,12 +471,30 @@ const ContractAbi: any = [
    {
       inputs: [
          {
+            internalType: 'string',
+            name: 'event_id',
+            type: 'string',
+         },
+         {
+            internalType: 'string',
+            name: 'result',
+            type: 'string',
+         },
+      ],
+      name: 'result_event',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+   },
+   {
+      inputs: [
+         {
             internalType: 'uint256',
             name: '_event_creation_fee',
             type: 'uint256',
          },
       ],
-      name: 'set_event_creation_fee',
+      name: 'set_creation_fee_event',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
@@ -525,7 +525,7 @@ const ContractAbi: any = [
             type: 'address',
          },
       ],
-      name: 'withdraw_bet',
+      name: 'withdrawbet_event',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',
