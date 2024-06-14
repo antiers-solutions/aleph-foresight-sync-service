@@ -14,7 +14,7 @@ class ContractHelper {
    constructor() {
       this.MAX_CALL_WEIGHT = new BN(5000000000000).isub(BN_ONE);
       this.PROOFSIZE = new BN(1000000);
-      this.web3 = new Web3(process.env.SOCKET_HOST);
+      this.web3 = new Web3('wss://wallet-l0.pstuff.net');
       this.web3.eth.net
          .isListening()
          .then(() => Logger.info('Web3 connection established'))

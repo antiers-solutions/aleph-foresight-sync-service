@@ -2,7 +2,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 
 import { formatBalance, isUndefined } from '@polkadot/util';
 const { TypeRegistry } = require('@polkadot/types/create');
-let wsProvider = new WsProvider(process.env.SOCKET_HOST);
+let wsProvider = new WsProvider('wss://wallet-l0.pstuff.net');
 const { Logger } = require('../logger');
 const EventData = {
    Address: 'AccountId',

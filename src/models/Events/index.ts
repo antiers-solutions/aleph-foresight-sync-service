@@ -18,6 +18,7 @@ export interface IEvents extends Document {
    status: boolean;
    createdAt: Date;
    updatedAt: Date;
+   eventExpireTime: string;
 }
 
 const eventsSchema: Schema<IEvents> = new Schema(
@@ -37,6 +38,7 @@ const eventsSchema: Schema<IEvents> = new Schema(
       resolutionSource: { type: String },
       resolver: { type: String },
       status: { type: Boolean },
+      eventExpireTime: { type: String },
    },
 
    {

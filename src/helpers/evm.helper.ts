@@ -3,7 +3,7 @@ import ContractAbi from '../contracts/contract.abi';
 const abidecoder = require('abi-decoder');
 import { nullValidation } from '../common/chain.common';
 const { chainInitialise } = require('../common/chain.common');
-const web3 = new Web3(process.env.SOCKET_HOST);
+const web3 = new Web3('wss://wallet-l0.pstuff.net');
 
 class Evm {
    public connection: any;
@@ -13,7 +13,7 @@ class Evm {
 
    constructor() {
       (async () => {
-         this.connection = new Web3(process.env.SOCKET_HOST);
+         this.connection = new Web3('wss://wallet-l0.pstuff.net');
          this.api = await chainInitialise('Ethereum chain');
       })();
    }

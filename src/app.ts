@@ -8,6 +8,7 @@ import Worker from './worker/index';
 import dbConnectionHandler from '../src/mongoDB/connection';
 import SocketHelper from './helpers/socket.helper';
 import * as cron from 'node-cron';
+import worker from './worker/index';
 declare global {
    // eslint-disable-next-line @typescript-eslint/no-namespace
    namespace NodeJS {
@@ -31,6 +32,7 @@ class App {
          this.count = 0;
          this.CronWorker();
          this.NativeWorker();
+         this.BidWorker();
       })();
    }
 
@@ -73,6 +75,10 @@ class App {
 
    async NativeWorker() {
       Worker.Native(await this.api);
+   }
+
+   async BidWorker() {
+      Worker.BidCheck();
    }
 
    private socketConnect(serverInstance: Server) {

@@ -1,20 +1,28 @@
 const cron = require('node-cron');
 const Web3 = require('web3');
 import saveEvent from '../helpers/event.helper';
+import * as Producer from '../repanda/producer';
 import ContractAbi from '../contracts/contract.abi';
 import saveOrder from '../helpers/order.helper';
+import Events from '../models/Events/index';
+import timeStampToString from '../helpers/commom.helper';
 const abidecoder = require('abi-decoder');
-const web3 = new Web3(process.env.SOCKET_HOST);
+const web3 = new Web3('wss://wallet-l0.pstuff.net');
+
 class Worker {
    public connection: any;
+
    async Native(api: any) {
       cron.schedule('*/6 * * * * *', async () => {
+         // const sendMessage = await Producer.getConnection('veer');
+
          try {
             const metadata = await api.rpc.state.getMetadata();
             await api.registry.setMetadata(metadata);
             const blockHeader = await api.rpc.chain.getHeader();
             const blockNumber = await blockHeader.number.toNumber();
             console.log('blockNumber ========>>>>', blockNumber);
+            // sendMessage(blockNumber)
 
             for (let index = blockNumber; index <= blockNumber; index++) {
                const blockHash = await api.rpc.chain.getBlockHash(index);
@@ -117,6 +125,60 @@ class Worker {
             return error;
          }
       });
+   }
+
+   // async BidCheck() {
+   //    cron.schedule('0 0 * * * *', async () => {
+   //       console.log("*******************");
+   //       console.log("*******************");
+   //       console.log("*******************");
+   //       console.log("*******************");
+   //       console.log("*******************");
+
+   //    });
+   // }
+
+   async BidCheck() {
+      cron.schedule('*/30 * * * * *', async () => {
+         try {
+            const sendMessage = await Producer.getConnection('closeEvent');
+            const currentTimeStamp = +new Date();
+            console.log(
+               'the current ime stamp ====>  ',
+               timeStampToString(1718280406 * 1000)
+            );
+            console.log(
+               'the current ime stamp ====>  ',
+               timeStampToString(+new Date())
+            );
+            // console.log("the current ime stamp ====>  ", 1718278831);
+            // console.log("the current ime stamp ====>  ", +Date.now());
+            const data = await Events.find({
+               eventExpireTime: timeStampToString(currentTimeStamp),
+            });
+            data.forEach((item) => {
+               sendMessage(String(item._id));
+            });
+            console.log('**************************************');
+            // console.log('**************************************', timeStampToString(currentTimeStamp));
+            console.log('******************    *************', data);
+            console.log('**************************************');
+            console.log('**************************************');
+         } catch (error) {
+            console.error(error);
+         }
+      });
+
+      // setInterval(async() => {
+      //    console.log("the current ime stamp ====>  ", +new Date);
+      //    const currentTimeStamp = +new Date;
+      //    const data = await Events.find({ targetDateTime: currentTimeStamp })
+      //    console.log('**************************************');
+      //    console.log('**************************************');
+      //    console.log('******************    *************', data);
+      //    console.log('**************************************');
+      //    console.log('**************************************');
+      // },1)
    }
 }
 export default new Worker();

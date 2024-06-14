@@ -1,9 +1,25 @@
 import Events from '../models/Events/index';
+import timeStampToString from '../helpers/commom.helper';
 const axios = require('axios');
+
 const saveEvent = async (item: any, txnHash: string) => {
    try {
       const fetchData = await axios.get(item[0]?.events[0]?.value);
-      console.log('the new data ', fetchData);
+
+      console.log(timeStampToString(Number(item[0]?.events[3]?.value)));
+
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+
+      console.log(
+         'the new data ',
+         timeStampToString(Number(item[0]?.events[3]?.value * 1000))
+      );
 
       const data = {
          eventId: String(item[0]?.events[0]?.value),
@@ -21,6 +37,9 @@ const saveEvent = async (item: any, txnHash: string) => {
          resolutionSource: 'Official Source',
          resolver: 'resolver123',
          status: true,
+         eventExpireTime: timeStampToString(
+            Number(item[0]?.events[3]?.value * 1000)
+         ),
       };
 
       const event = new Events(data);
