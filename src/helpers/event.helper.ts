@@ -8,14 +8,6 @@ const saveEvent = async (item: any, txnHash: string) => {
 
       console.log(timeStampToString(Number(item[0]?.events[3]?.value)));
 
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-
       console.log(
          'the new data ',
          timeStampToString(Number(item[0]?.events[3]?.value * 1000))
@@ -34,7 +26,7 @@ const saveEvent = async (item: any, txnHash: string) => {
          platformFees: 5,
          minimumBetFees: 10,
          maximumBetFees: 50000,
-         resolutionSource: 'Official Source',
+         resolutionSource: 'https://coinmarketcap.com/currencies/ethereum/',
          resolver: 'resolver123',
          status: true,
          eventExpireTime: timeStampToString(

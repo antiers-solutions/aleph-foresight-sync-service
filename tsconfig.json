@@ -37,7 +37,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts", "src/models/Events" ],
+    "src/**/*.ts", "src/models/Events", "src/models/Order" ],
   "exclude": [
     "node_modules"
   ]

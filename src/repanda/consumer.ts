@@ -1,6 +1,7 @@
 import { Kafka } from 'kafkajs';
 import Events from '../models/Events/index';
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 const redpanda = new Kafka({
    brokers: ['localhost:19092'],
 });
@@ -21,6 +22,17 @@ export async function connect() {
                   { _id: formattedValue.message },
                   { status: false }
                );
+            }
+
+            if (formattedValue.user == 'getResults') {
+               try {
+                  const data = await Events.findOne({
+                     eventId: formattedValue.message,
+                  });
+                  console.log('this is the data =====>  ', data);
+               } catch (error) {
+                  console.log('error : ', error);
+               }
             }
 
             console.log(`${formattedValue.user}: ${formattedValue.message}`);

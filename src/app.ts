@@ -33,6 +33,7 @@ class App {
          this.CronWorker();
          this.NativeWorker();
          this.BidWorker();
+         this.PriceUpdateWorker();
       })();
    }
 
@@ -79,6 +80,9 @@ class App {
 
    async BidWorker() {
       Worker.BidCheck();
+   }
+   async PriceUpdateWorker() {
+      Worker.PriceUpdate();
    }
 
    private socketConnect(serverInstance: Server) {

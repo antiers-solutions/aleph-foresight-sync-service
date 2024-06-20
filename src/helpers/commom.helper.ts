@@ -1,7 +1,5 @@
 const timeStampToString = (timestamp: string | number): string => {
    const data = new Date(timestamp);
-   console.log('<><><><><', data);
-
    // Helper function to pad single digit numbers with leading zero
    const pad = (num: any) => num.toString().padStart(2, '0');
 

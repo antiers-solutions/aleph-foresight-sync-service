@@ -6,6 +6,9 @@ import ContractAbi from '../contracts/contract.abi';
 import saveOrder from '../helpers/order.helper';
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
+import axios from 'axios';
+import Currency from '../models/Currency/index';
+import { priceListUrl } from '../utils/constents.util';
 const abidecoder = require('abi-decoder');
 const web3 = new Web3('wss://wallet-l0.pstuff.net');
 
@@ -51,10 +54,6 @@ class Worker {
                         )
                         .map(async ({ event }: any) => {
                            events = events + 1;
-                           console.log(
-                              'event ============>>>>',
-                              event.toHuman().method
-                           );
                            if (
                               (event.toHuman().section == 'evm' ||
                                  event.toHuman().section == 'ethereum') &&
@@ -127,58 +126,57 @@ class Worker {
       });
    }
 
-   // async BidCheck() {
-   //    cron.schedule('0 0 * * * *', async () => {
-   //       console.log("*******************");
-   //       console.log("*******************");
-   //       console.log("*******************");
-   //       console.log("*******************");
-   //       console.log("*******************");
+   async PriceUpdate() {
+      cron.schedule('*/30 * * * * *', async () => {
+         try {
+            const options = {
+               method: 'GET',
+               url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
+               headers: {
+                  Accept: 'application/json',
+                  'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
+               },
+               params: {
+                  symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
+                  convert: 'USD',
+               },
+            };
 
-   //    });
-   // }
+            const prices = await axios.request(options);
+            Object.entries(prices.data.data).forEach(
+               async ([key, value]: any) => {
+                  await Currency.findOneAndUpdate(
+                     { symbol: key },
+                     { price: value?.quote?.USD?.price }
+                  );
+               }
+            );
+
+            // console.log("prices :", prices.data.data);
+         } catch (error) {
+            console.error(error);
+         }
+      });
+   }
 
    async BidCheck() {
       cron.schedule('*/30 * * * * *', async () => {
          try {
             const sendMessage = await Producer.getConnection('closeEvent');
+            const getResults = await Producer.getConnection('getResults');
             const currentTimeStamp = +new Date();
-            console.log(
-               'the current ime stamp ====>  ',
-               timeStampToString(1718280406 * 1000)
-            );
-            console.log(
-               'the current ime stamp ====>  ',
-               timeStampToString(+new Date())
-            );
-            // console.log("the current ime stamp ====>  ", 1718278831);
-            // console.log("the current ime stamp ====>  ", +Date.now());
             const data = await Events.find({
                eventExpireTime: timeStampToString(currentTimeStamp),
             });
+
             data.forEach((item) => {
                sendMessage(String(item._id));
+               getResults(String(item.eventId));
             });
-            console.log('**************************************');
-            // console.log('**************************************', timeStampToString(currentTimeStamp));
-            console.log('******************    *************', data);
-            console.log('**************************************');
-            console.log('**************************************');
          } catch (error) {
             console.error(error);
          }
       });
-
-      // setInterval(async() => {
-      //    console.log("the current ime stamp ====>  ", +new Date);
-      //    const currentTimeStamp = +new Date;
-      //    const data = await Events.find({ targetDateTime: currentTimeStamp })
-      //    console.log('**************************************');
-      //    console.log('**************************************');
-      //    console.log('******************    *************', data);
-      //    console.log('**************************************');
-      //    console.log('**************************************');
-      // },1)
    }
 }
 export default new Worker();
