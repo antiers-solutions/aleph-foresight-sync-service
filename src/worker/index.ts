@@ -9,31 +9,35 @@ import timeStampToString from '../helpers/commom.helper';
 import axios from 'axios';
 import Currency from '../models/Currency/index';
 import { priceListUrl } from '../utils/constents.util';
+import { LogsMap, LogsStructure } from '../interfaces/worker.interfaces';
 const abidecoder = require('abi-decoder');
 const web3 = new Web3('wss://wallet-l0.pstuff.net');
+
+const contract = new web3.eth.Contract(
+   ContractAbi,
+   process.env.CONTRACT_ADDRESS
+);
+// const account = web3.eth.accounts.wallet.add(process.env.ADMIN).get(0);
 
 class Worker {
    public connection: any;
 
    async Native(api: any) {
       cron.schedule('*/6 * * * * *', async () => {
-         // const sendMessage = await Producer.getConnection('veer');
-
          try {
             const metadata = await api.rpc.state.getMetadata();
             await api.registry.setMetadata(metadata);
             const blockHeader = await api.rpc.chain.getHeader();
             const blockNumber = await blockHeader.number.toNumber();
-            console.log('blockNumber ========>>>>', blockNumber);
-            // sendMessage(blockNumber)
+            console.log('blockNumber == > ', blockNumber);
 
             for (let index = blockNumber; index <= blockNumber; index++) {
                const blockHash = await api.rpc.chain.getBlockHash(index);
                const block = await api.rpc.chain.getBlock(blockHash);
                let events = 0;
-               const arr: any[] = [];
-               block.block.header.forEach((ex: any) => {
-                  arr.push(ex.toHuman());
+               const arr: LogsStructure[] = [];
+               block.block.header.forEach((logs: any) => {
+                  arr.push(logs.toHuman());
                });
                const allRecords = await api?.query?.system?.events?.at(
                   block?.block?.header?.hash
@@ -60,26 +64,14 @@ class Worker {
                               (event.toHuman().method == 'Executed' ||
                                  event.toHuman().method == 'Log')
                            ) {
-                              console.log(
-                                 'event?.data?.transactionHash ',
-                                 String(event?.data?.transactionHash)
-                              );
-                              console.log(
-                                 'event?.data?.transactionHash ',
-                                 event?.data?.toHuman()
-                              );
                               if (event?.data?.transactionHash) {
-                                 // const txData =
-                                 //    await this.connection?.eth?.getTransaction(
-                                 //       event?.data?.transactionHash
-                                 //    );
-                                 const xxxxxxxx =
+                                 const transactionReceipt =
                                     await web3.eth.getTransactionReceipt(
                                        event?.data?.transactionHash
                                     );
                                  abidecoder.addABI(ContractAbi);
                                  const item = abidecoder.decodeLogs(
-                                    xxxxxxxx?.logs
+                                    transactionReceipt?.logs
                                  );
 
                                  console.log(
@@ -100,21 +92,19 @@ class Worker {
                                        event?.data?.transactionHash
                                     );
                                  }
+
+                                 if (item[0]?.name == 'result_event') {
+                                    console.log(
+                                       '>>>>> working fine here <<<<<<<<<<<',
+                                       item
+                                    );
+                                 }
                               }
                            }
                            if (
                               event.toHuman().section == 'ethereum' &&
                               event.toHuman().method == 'Executed'
                            ) {
-                              console.log(
-                                 'event$$$$$$$$$$$$$ ',
-                                 event?.data?.toHuman()?.transactionHash
-                              );
-                              const xxxxxxxx =
-                                 await web3.eth.getTransactionReceipt(
-                                    event?.data?.toHuman()?.transactionHash
-                                 );
-                              console.log('1EVENT DATA =========>>>', xxxxxxxx);
                            }
                         });
                   }
@@ -128,6 +118,8 @@ class Worker {
 
    async PriceUpdate() {
       cron.schedule('*/30 * * * * *', async () => {
+         // console.log(">>>>>------->>>>>>>> ", contract.methods);
+
          try {
             const options = {
                method: 'GET',
@@ -144,15 +136,13 @@ class Worker {
 
             const prices = await axios.request(options);
             Object.entries(prices.data.data).forEach(
-               async ([key, value]: any) => {
+               async ([key, value]: [string, any]) => {
                   await Currency.findOneAndUpdate(
                      { symbol: key },
                      { price: value?.quote?.USD?.price }
                   );
                }
             );
-
-            // console.log("prices :", prices.data.data);
          } catch (error) {
             console.error(error);
          }
@@ -160,9 +150,9 @@ class Worker {
    }
 
    async BidCheck() {
-      cron.schedule('*/30 * * * * *', async () => {
+      cron.schedule('*/60 * * * * *', async () => {
          try {
-            const sendMessage = await Producer.getConnection('closeEvent');
+            const closeEvent = await Producer.getConnection('closeEvent');
             const getResults = await Producer.getConnection('getResults');
             const currentTimeStamp = +new Date();
             const data = await Events.find({
@@ -170,8 +160,28 @@ class Worker {
             });
 
             data.forEach((item) => {
-               sendMessage(String(item._id));
+               closeEvent(String(item._id));
                getResults(String(item.eventId));
+            });
+         } catch (error) {
+            console.error(error);
+         }
+      });
+   }
+   async ResultCheck() {
+      cron.schedule('*/60 * * * * *', async () => {
+         console.log('testing 123');
+         try {
+            const eventResult = await Producer.getConnection('eventResult');
+            const currentTimeStamp = +new Date();
+
+            const data = await Events.find({
+               eventResultTime: timeStampToString(currentTimeStamp),
+            });
+            console.log('=-=-=-=-=-=-=-=->>>>> ', data);
+
+            data.forEach((item) => {
+               eventResult(String(item.eventId));
             });
          } catch (error) {
             console.error(error);

@@ -15,16 +15,17 @@ export interface IEvents extends Document {
    maximumBetFees: number;
    resolutionSource: string;
    resolver: string;
-   status: boolean;
+   status: number;
    createdAt: Date;
    updatedAt: Date;
    eventExpireTime: string;
+   eventResultTime: string;
 }
 
 const eventsSchema: Schema<IEvents> = new Schema(
    {
       eventId: { type: String },
-      txnId: { type: String },
+      txnId: { type: String, unique: true },
       userId: { type: String },
       currencyType: { type: String },
       priceLevel: { type: Number },
@@ -37,8 +38,9 @@ const eventsSchema: Schema<IEvents> = new Schema(
       maximumBetFees: { type: Number },
       resolutionSource: { type: String },
       resolver: { type: String },
-      status: { type: Boolean },
+      status: { type: Number },
       eventExpireTime: { type: String },
+      eventResultTime: { type: String },
    },
 
    {

@@ -17,7 +17,9 @@ declare global {
       }
    }
 }
+
 const globalData: any = global;
+
 class App {
    public app: express.Application;
    public api: any;
@@ -34,6 +36,7 @@ class App {
          this.NativeWorker();
          this.BidWorker();
          this.PriceUpdateWorker();
+         this.ResultCheckWorker();
       })();
    }
 
@@ -83,6 +86,10 @@ class App {
    }
    async PriceUpdateWorker() {
       Worker.PriceUpdate();
+   }
+
+   async ResultCheckWorker() {
+      Worker.ResultCheck();
    }
 
    private socketConnect(serverInstance: Server) {

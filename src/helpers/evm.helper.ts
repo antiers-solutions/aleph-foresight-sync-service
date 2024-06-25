@@ -2,6 +2,11 @@ const Web3 = require('web3');
 import ContractAbi from '../contracts/contract.abi';
 const abidecoder = require('abi-decoder');
 import { nullValidation } from '../common/chain.common';
+import {
+   EventInterface,
+   EventInterfaceInfo,
+   TransactionInfo,
+} from '../interfaces/evm.helper.interfaces';
 const { chainInitialise } = require('../common/chain.common');
 const web3 = new Web3('wss://wallet-l0.pstuff.net');
 
@@ -18,7 +23,9 @@ class Evm {
       })();
    }
 
-   decodeHexString(event: any) {
+   decodeHexString(event: EventInterface) {
+      console.log('event : ', event);
+
       const hexString = event?.data?.log?.data?.toString();
       const cleanedHexString = hexString.startsWith('0x')
          ? hexString.slice(2)
@@ -61,7 +68,7 @@ class Evm {
                ? '0x' + evmdata[2].toString().slice(26)
                : from;
          if (evmdata.length > 3) {
-            const evmString = evmdata[3].toHuman();
+            const evmString = evmdata[3]?.toHuman();
             if (
                from == to &&
                Number(evmString.slice(2, evmString.length - 3)) != 0
@@ -79,23 +86,14 @@ class Evm {
    };
    getEvmTrans = async (txn: string, sectionmethod: string, count: number) => {
       const txData = await this.connection?.eth?.getTransaction(txn);
-      const xxxxxxxx = await web3.eth.getTransactionReceipt(txn);
-      console.log('with events : ', xxxxxxxx.logs[0]?.data);
-      // const yyyyyy = await web3.eth.abi.decodeParameters(['uint256', 'uint256', 'uint256', 'address', 'address', 'string'], xxxxxxxx?.logs[0]?.data)
       abidecoder.addABI(ContractAbi);
-      const item = abidecoder.decodeLogs(xxxxxxxx?.logs);
-      console.log('yyyyyy : ', item[0]?.events[0]);
-      console.log('yyyyyy : ', item[0]?.events[1]);
-      console.log('yyyyyy : ', item[0]?.events[2]);
-      console.log('yyyyyy : ', item[0]?.events[3]);
       if (txData) {
-         console.log('txData : ', txData);
          const txFee = Number((txData?.gasPrice * txData?.gas) / 10 ** 18);
          const web3Fees =
             Web3.utils.fromWei(txData?.value.toString(), 'ether') != '0'
                ? Web3.utils.fromWei(txData?.value.toString(), 'ether')
                : null;
-         const transactionDetail: any = {
+         const transactionDetail: TransactionInfo = {
             block_number: txData?.blockNumber,
             txnHash: txData?.hash ? txData?.hash : '',
             status: 'pending',

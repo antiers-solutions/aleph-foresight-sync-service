@@ -1,6 +1,4 @@
-import { log } from 'util';
 import Order from '../models/Order/index';
-const web3 = require('web3');
 const saveOrder = async (item: any, txnHash: string) => {
    try {
       const data = {
@@ -13,8 +11,7 @@ const saveOrder = async (item: any, txnHash: string) => {
       };
       const order = new Order(data);
 
-      const savedOrder = await order.save();
-      console.log('savedOrder : ', savedOrder);
+      await order.save();
    } catch (error) {
       console.log('error : ', error);
    }
