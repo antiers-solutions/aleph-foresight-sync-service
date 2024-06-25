@@ -90,10 +90,7 @@ class Worker {
                                  }
 
                                  if (item[0]?.name == chain.resultEvent) {
-                                    console.log(
-                                       '>>>>> working fine here <<<<<<<<<<<',
-                                       item
-                                    );
+                                    console.log('item : ', item);
                                  }
                               }
                            }
