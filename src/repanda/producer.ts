@@ -1,6 +1,8 @@
 import { Kafka } from 'kafkajs';
+import '../connection';
+import { errorLog, kafka } from '../utils/constents.util';
 const redpanda = new Kafka({
-   brokers: ['localhost:19092'],
+   brokers: [process.env.KAFKA_URL],
 });
 const producer = redpanda.producer();
 export async function getConnection(user: string) {
@@ -8,18 +10,18 @@ export async function getConnection(user: string) {
       await producer.connect();
       return async (message: string) => {
          await producer.send({
-            topic: 'sync-service',
+            topic: kafka.syncService,
             messages: [{ value: JSON.stringify({ message, user }) }],
          });
       };
    } catch (error) {
-      console.error('Error:', error);
+      errorLog(error);
    }
 }
 export async function disconnect() {
    try {
       await producer.disconnect();
    } catch (error) {
-      console.error('Error:', error);
+      errorLog(error);
    }
 }

@@ -1,5 +1,6 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
+import * as cron from 'node-cron';
 import { Response, Request } from 'express';
 import { Server } from 'http';
 import morganMiddleware from './config/morganMiddleware';
@@ -7,8 +8,8 @@ import { chainInitialise } from './common/chain.common';
 import Worker from './worker/index';
 import dbConnectionHandler from '../src/mongoDB/connection';
 import SocketHelper from './helpers/socket.helper';
-import * as cron from 'node-cron';
 import worker from './worker/index';
+import { mongoDb } from './utils/constents.util';
 declare global {
    // eslint-disable-next-line @typescript-eslint/no-namespace
    namespace NodeJS {
@@ -53,7 +54,7 @@ class App {
       );
       this.socketConnect(instance);
       const isDBconnected = dbConnectionHandler.createDBConnection();
-      if (!isDBconnected) throw new Error('Unable to connect mongodb');
+      if (!isDBconnected) throw new Error(mongoDb.connectionIssue);
    }
 
    public getServer(): express.Application {

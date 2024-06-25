@@ -1,15 +1,23 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-
 import { formatBalance, isUndefined } from '@polkadot/util';
 const { TypeRegistry } = require('@polkadot/types/create');
-let wsProvider = new WsProvider('wss://wallet-l0.pstuff.net');
+import {
+   apiError,
+   chainInitialisedLog,
+   connections,
+   system,
+} from '../utils/constents.util';
+import '../connection';
 const { Logger } = require('../logger');
+let wsProvider = new WsProvider(process.env.SOCKET_HOST);
+
 const EventData = {
    Address: 'AccountId',
    Amount: 'Balance',
 };
 
 let api: any;
+
 export const chainInitialise = async (controllName: string) => {
    const registry = new TypeRegistry();
    registry.register({
@@ -17,23 +25,23 @@ export const chainInitialise = async (controllName: string) => {
    });
 
    wsProvider.on('disconnected', () => {
-      Logger.error('disconnected ' + wsProvider);
+      Logger.error(connections.disconnected + wsProvider);
    });
    api = await ApiPromise.create({ provider: wsProvider, registry });
-   api.on('connected', () =>
-      Logger.info(`Chain initialised for ${controllName} controller`)
+   api.on(connections.disconnected, () =>
+      Logger.info(chainInitialisedLog(controllName))
    );
-   api.on('disconnected', async () => {
+   api.on(connections.disconnected, async () => {
       try {
          wsProvider.on('connected', async () => {
             api = await ApiPromise.create({ provider: wsProvider, registry });
             return;
          });
       } catch (error) {
-         Logger.error('Error api connection : ' + error);
+         Logger.error(apiError + error);
       }
    });
-   Logger.info(`Chain initialised for ${controllName} controller`);
+   Logger.info(chainInitialisedLog(controllName));
    setInterval(async () => {
       if (api.isConnected === false) {
          wsProvider = new WsProvider(process.env.SOCKET_HOST);
@@ -47,7 +55,7 @@ export const chainInitialise = async (controllName: string) => {
 };
 
 export const nullValidation = (value: any): null | string => {
-   if (value === 'null' || value === 'NaN') return null;
+   if (value === system.null || value === system.nan) return null;
    else if (value === 0) return value.toString();
    else return value ? value.toString() : null;
 };

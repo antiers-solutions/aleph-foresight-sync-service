@@ -1,3 +1,5 @@
+import { connections, socketSuccess } from '../utils/constents.util';
+
 const { Logger } = require('../logger');
 
 class SocketHelper {
@@ -10,11 +12,11 @@ class SocketHelper {
 
    checkConnection(): void {
       this.io
-         .on('connection', () => {
-            Logger.info('Socket connected successfully');
+         .on(connections.connection, () => {
+            Logger.info(socketSuccess);
          })
-         .on('error', (error: any) => {
-            Logger.error('error ' + error);
+         .on(connections.error, (error: any) => {
+            Logger.error(`${connections.error} ${error}`);
          });
    }
 }

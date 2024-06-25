@@ -1,5 +1,6 @@
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
+import { resolutionSource } from '../utils/constents.util';
 const axios = require('axios');
 
 const saveEvent = async (item: any, txnHash: string) => {
@@ -18,19 +19,13 @@ const saveEvent = async (item: any, txnHash: string) => {
          platformFees: 5,
          minimumBetFees: 10,
          maximumBetFees: 50000,
-         resolutionSource: 'https://coinmarketcap.com/currencies/',
+         resolutionSource: resolutionSource,
          resolver: 'resolver123',
          status: 1,
          eventExpireTime: timeStampToString(
             Number(item[0]?.events[3]?.value * 1000)
          ),
       };
-
-      console.log(
-         '=======> : ',
-         timeStampToString(Number(item[0]?.events[3]?.value * 1000))
-      );
-
       const event = new Events(data);
       return await event.save();
    } catch (error: any) {

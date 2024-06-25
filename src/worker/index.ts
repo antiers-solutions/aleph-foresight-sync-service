@@ -1,18 +1,19 @@
 const cron = require('node-cron');
 const Web3 = require('web3');
+import axios from 'axios';
+const abidecoder = require('abi-decoder');
+import '../connection';
 import saveEvent from '../helpers/event.helper';
 import * as Producer from '../repanda/producer';
 import ContractAbi from '../contracts/contract.abi';
 import saveOrder from '../helpers/order.helper';
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
-import axios from 'axios';
 import Currency from '../models/Currency/index';
-import { priceListUrl } from '../utils/constents.util';
+import { chain, kafka, priceListUrl } from '../utils/constents.util';
 import { LogsMap, LogsStructure } from '../interfaces/worker.interfaces';
-const abidecoder = require('abi-decoder');
-const web3 = new Web3('wss://wallet-l0.pstuff.net');
 
+const web3 = new Web3(process.env.SOCKET_URL);
 const contract = new web3.eth.Contract(
    ContractAbi,
    process.env.CONTRACT_ADDRESS
@@ -59,10 +60,10 @@ class Worker {
                         .map(async ({ event }: any) => {
                            events = events + 1;
                            if (
-                              (event.toHuman().section == 'evm' ||
-                                 event.toHuman().section == 'ethereum') &&
-                              (event.toHuman().method == 'Executed' ||
-                                 event.toHuman().method == 'Log')
+                              (event.toHuman().section == chain.evm ||
+                                 event.toHuman().section == chain.ethereum) &&
+                              (event.toHuman().method == chain.executed ||
+                                 event.toHuman().method == chain.log)
                            ) {
                               if (event?.data?.transactionHash) {
                                  const transactionReceipt =
@@ -74,26 +75,21 @@ class Worker {
                                     transactionReceipt?.logs
                                  );
 
-                                 console.log(
-                                    'item[0]?.events[1]?.name : ',
-                                    item
-                                 );
-
-                                 if (item[0]?.name == 'event_info') {
+                                 if (item[0]?.name == chain.eventInfo) {
                                     saveEvent(
                                        item,
                                        event?.data?.transactionHash
                                     );
                                  }
 
-                                 if (item[0]?.name == 'response_info') {
+                                 if (item[0]?.name == chain.resultInfo) {
                                     saveOrder(
                                        item,
                                        event?.data?.transactionHash
                                     );
                                  }
 
-                                 if (item[0]?.name == 'result_event') {
+                                 if (item[0]?.name == chain.resultEvent) {
                                     console.log(
                                        '>>>>> working fine here <<<<<<<<<<<',
                                        item
@@ -102,8 +98,8 @@ class Worker {
                               }
                            }
                            if (
-                              event.toHuman().section == 'ethereum' &&
-                              event.toHuman().method == 'Executed'
+                              event.toHuman().section == chain.ethereum &&
+                              event.toHuman().method == chain.executed
                            ) {
                            }
                         });
@@ -152,8 +148,8 @@ class Worker {
    async BidCheck() {
       cron.schedule('*/60 * * * * *', async () => {
          try {
-            const closeEvent = await Producer.getConnection('closeEvent');
-            const getResults = await Producer.getConnection('getResults');
+            const closeEvent = await Producer.getConnection(kafka.closeEvent);
+            const getResults = await Producer.getConnection(kafka.getResults);
             const currentTimeStamp = +new Date();
             const data = await Events.find({
                eventExpireTime: timeStampToString(currentTimeStamp),
@@ -172,7 +168,7 @@ class Worker {
       cron.schedule('*/60 * * * * *', async () => {
          console.log('testing 123');
          try {
-            const eventResult = await Producer.getConnection('eventResult');
+            const eventResult = await Producer.getConnection(kafka.eventResult);
             const currentTimeStamp = +new Date();
 
             const data = await Events.find({

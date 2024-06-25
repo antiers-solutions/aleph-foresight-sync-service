@@ -1,19 +1,21 @@
 import { Kafka } from 'kafkajs';
-import Events from '../models/Events/index';
 import { v4 as uuidv4 } from 'uuid';
+import '../connection';
+import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
 import { EventData } from '../interfaces/consumer.interfaces';
 import Currency from '../models/Currency/index';
 import resultCall from '../helpers/consumer.helper';
+import { errorLog, kafka, orderTypes } from '../utils/constents.util';
 
 const redpanda = new Kafka({
-   brokers: ['localhost:19092'],
+   brokers: [process.env.KAFKA_URL],
 });
 const consumer = redpanda.consumer({ groupId: uuidv4() });
 export async function connect() {
    try {
       await consumer.connect();
-      await consumer.subscribe({ topic: 'sync-service' });
+      await consumer.subscribe({ topic: kafka.syncService });
       await consumer.run({
          eachMessage: async ({ topic, partition, message }) => {
             const formattedValue = JSON.parse(
@@ -21,13 +23,13 @@ export async function connect() {
             );
 
             switch (formattedValue.user) {
-               case 'closeEvent':
+               case kafka.closeEvent:
                   await Events.findOneAndUpdate(
                      { _id: formattedValue.message },
                      { status: 0 }
                   );
                   break;
-               case 'getResults':
+               case kafka.getResults:
                   try {
                      const event: EventData = await Events.findOne({
                         eventId: formattedValue.message,
@@ -43,12 +45,9 @@ export async function connect() {
                            eventResultTime: time,
                         }
                      );
-                     console.log('working ====> ', data);
-                  } catch (error) {
-                     console.log('error : ', error);
-                  }
+                  } catch (error) {}
                   break;
-               case 'eventResult':
+               case kafka.eventResult:
                   try {
                      const event: EventData = await Events.findOne({
                         eventId: formattedValue.message,
@@ -56,15 +55,13 @@ export async function connect() {
                      const currencyData = await Currency.findOne({
                         symbol: event.currencyType,
                      });
-                     console.log('=====> currencyData: ', currencyData);
-                     let result: string = 'Yes';
+                     let result: string = orderTypes.yes;
                      currencyData.price > event.priceLevel
-                        ? (result = 'No')
-                        : (result = 'Yes');
-                     console.log('result : ', result);
+                        ? (result = orderTypes.no)
+                        : (result = orderTypes.yes);
                      await resultCall(event.eventId, result);
                   } catch (error) {
-                     console.log('error : ', error);
+                     errorLog(error);
                   }
                   break;
                default:
@@ -73,13 +70,13 @@ export async function connect() {
          },
       });
    } catch (error) {
-      console.log('Error:', error);
+      errorLog(error);
    }
 }
 export async function disconnect() {
    try {
       await consumer.disconnect();
    } catch (error) {
-      console.error('Error:', error);
+      errorLog(error);
    }
 }

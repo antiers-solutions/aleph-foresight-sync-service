@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
+import '../connection';
 import { log } from '../utils/helper.utils';
+import { mongoDb, connections } from '../utils/constents.util';
 
 // Database connection and events handler class
 class DBConnectionHandler {
@@ -20,12 +22,12 @@ class DBConnectionHandler {
    createDBConnection = async () => {
       try {
          this._bindMongoConnectionEvents();
-         await mongoose.connect(`mongodb://localhost:27017/Aleph`, {
+         await mongoose.connect(process.env.MONGO_URI, {
             connectTimeoutMS: 40000,
          });
          return true;
       } catch (err) {
-         log.red('Error while connecting to MongoDB: ', err);
+         log.red(mongoDb.errorLog, err);
          return false;
       }
    };
@@ -45,29 +47,29 @@ class DBConnectionHandler {
    _bindMongoConnectionEvents = () => {
       try {
          // fired when connected to mongodb
-         mongoose.connection.on('connecting', () => {
-            log.blue('Connecting to mongodb server');
+         mongoose.connection.on(connections.connecting, () => {
+            log.blue(mongoDb.connecting);
          });
 
          // fired when connected to mongodb
-         mongoose.connection.on('connected', () => {
-            log.green('MongoDB connected');
+         mongoose.connection.on(connections.connected, () => {
+            log.green(mongoDb.connected);
          });
 
          // fired when mongodb connection is disconnected
-         mongoose.connection.on('disconnected', () => {
-            log.blue('MongoDB disconnected');
+         mongoose.connection.on(connections.disconnected, () => {
+            log.blue(mongoDb.disconnected);
          });
 
          //fired when error occur in mongodb connection
-         mongoose.connection.on('error', (err: Error) => {
-            log.red('MongoDB error: ', err);
+         mongoose.connection.on(connections.error, (err: Error) => {
+            log.red(mongoDb.onError, err);
 
             // for future usage
             // this.createDBConnection();
          });
       } catch (err) {
-         log.red('Error while binding the mongodb conncetion events: ', err);
+         log.red(mongoDb.onErrorBinding, err);
       }
    };
 }

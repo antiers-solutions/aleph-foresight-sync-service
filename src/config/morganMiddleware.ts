@@ -1,5 +1,6 @@
 import * as morgan from 'morgan';
 import { StreamOptions } from 'morgan';
+import { envType, morganMiddlewareParam } from '../utils/constents.util';
 
 const { Logger } = require('../logger');
 // Override the stream method by telling
@@ -15,8 +16,8 @@ const stream: StreamOptions = {
 // we already told to the logger that it should print
 // only warning and error messages in production.
 const skip = () => {
-   const env = process.env.NODE_ENV || 'development';
-   return env !== 'development';
+   const env = process.env.NODE_ENV || envType.development;
+   return env !== envType.development;
 };
 
 // Build the morgan middleware
@@ -25,7 +26,7 @@ const morganMiddleware = morgan(
    // The message format is made from tokens, and each token is
    // defined inside the Morgan library.
    // You can create your custom token to show what do you want from a request.
-   ':method :url :status :res[content-length] - :response-time ms',
+   morganMiddlewareParam,
    // Options: in this case, I overwrote the stream and the skip logic.
    // See the methods above.
    { stream, skip }

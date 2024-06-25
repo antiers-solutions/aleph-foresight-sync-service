@@ -1,12 +1,10 @@
-import * as config from './config';
 import * as readline from 'node:readline';
+import * as config from './config';
 import * as Admin from './repanda/admin';
 import * as Producer from './repanda/producer';
 import * as Consumer from './repanda/consumer';
 import App from './app';
-(async () => {
-   await config.initiate();
-})();
+import { kafka } from './utils/constents.util';
 
 const app = new App();
 
@@ -18,36 +16,37 @@ const rl = readline.createInterface({
 });
 
 async function start() {
-   const topic = 'sync-service';
-   console.log(`Creating topic: ${topic}`);
+   const topic = kafka.syncService;
    await Admin.createTopic(topic);
-   console.log('Connecting...');
    await Consumer.connect();
-   rl.question('Enter user name: \n', async function (username) {
+   rl.question('', async function (username) {
       const sendMessage = await Producer.getConnection(username);
       if (sendMessage) {
-         console.log('Connected, press Ctrl+C to exit');
          rl.on('line', (input) => {
             readline.moveCursor(process.stdout, 0, -1);
             sendMessage(input);
          });
       } else {
-         console.error('Failed to initialize sendMessage function');
+         console.error(kafka.initialiseFailed);
       }
    });
 }
 start();
-process.on('SIGINT', async () => {
-   console.log('Closing app...');
+process.on(kafka.sigint, async () => {
+   console.log(kafka.close);
    try {
       await Producer.disconnect();
       await Consumer.disconnect();
       rl.close();
    } catch (err) {
-      console.error('Error during cleanup:', err);
+      console.error(kafka.cleanupError, err);
       process.exit(1);
    } finally {
-      console.log('Cleanup finished. Exiting');
+      console.log(kafka.cleanupFinish);
       process.exit(0);
    }
 });
+
+(async () => {
+   await config.initiate();
+})();
