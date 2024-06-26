@@ -27,10 +27,13 @@ export const chainInitialise = async (controlName: string) => {
    wsProvider.on('disconnected', () => {
       Logger.error(connections.disconnected + wsProvider);
    });
+
    api = await ApiPromise.create({ provider: wsProvider, registry });
+
    api.on(connections.disconnected, () =>
       Logger.info(chainInitialisedLog(controlName))
    );
+
    api.on(connections.disconnected, async () => {
       try {
          wsProvider.on('connected', async () => {
@@ -41,6 +44,7 @@ export const chainInitialise = async (controlName: string) => {
          Logger.error(apiError + error);
       }
    });
+
    Logger.info(chainInitialisedLog(controlName));
    setInterval(async () => {
       if (api.isConnected === false) {
@@ -51,6 +55,7 @@ export const chainInitialise = async (controlName: string) => {
          });
       }
    }, 10000);
+
    return api;
 };
 
