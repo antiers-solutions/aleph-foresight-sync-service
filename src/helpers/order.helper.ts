@@ -1,4 +1,4 @@
-import { errorLog, orderTypes } from '../utils/constents.util';
+import { errorLog, orderTypes } from '../utils/constant.util';
 import Order from '../models/Order/index';
 const saveOrder = async (item: any, txnHash: string) => {
    try {

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import '../connection';
 import { log } from '../utils/helper.utils';
-import { mongoDb, connections } from '../utils/constents.util';
+import { mongoDb, connections } from '../utils/constant.util';
 
 // Database connection and events handler class
 class DBConnectionHandler {

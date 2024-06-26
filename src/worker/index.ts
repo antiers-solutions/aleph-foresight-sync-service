@@ -10,7 +10,7 @@ import saveOrder from '../helpers/order.helper';
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
 import Currency from '../models/Currency/index';
-import { chain, kafka, priceListUrl } from '../utils/constents.util';
+import { chain, kafka, priceListUrl } from '../utils/constant.util';
 import { LogsMap, LogsStructure } from '../interfaces/worker.interfaces';
 
 const web3 = new Web3(process.env.SOCKET_URL);

@@ -1,6 +1,6 @@
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
-import { resolutionSource } from '../utils/constents.util';
+import { resolutionSource } from '../utils/constant.util';
 const axios = require('axios');
 
 const saveEvent = async (item: any, txnHash: string) => {

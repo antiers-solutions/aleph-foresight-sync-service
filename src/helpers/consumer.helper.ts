@@ -1,7 +1,7 @@
 import Events from '../models/Events/index';
 import ContractAbi from '../contracts/contract.abi';
 import '../connection';
-import { errorLog } from '../utils/constents.util';
+import { errorLog } from '../utils/constant.util';
 const Web3 = require('web3');
 const web3 = new Web3(process.env.SOCKET_HOST);
 const privateKey = process.env.ADMIN;

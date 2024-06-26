@@ -1,6 +1,6 @@
 import * as morgan from 'morgan';
 import { StreamOptions } from 'morgan';
-import { envType, morganMiddlewareParam } from '../utils/constents.util';
+import { envType, morganMiddlewareParam } from '../utils/constant.util';
 
 const { Logger } = require('../logger');
 // Override the stream method by telling

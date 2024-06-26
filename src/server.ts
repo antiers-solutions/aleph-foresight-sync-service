@@ -4,7 +4,7 @@ import * as Admin from './repanda/admin';
 import * as Producer from './repanda/producer';
 import * as Consumer from './repanda/consumer';
 import App from './app';
-import { kafka } from './utils/constents.util';
+import { kafka } from './utils/constant.util';
 
 const app = new App();
 

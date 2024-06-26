@@ -6,7 +6,7 @@ import timeStampToString from '../helpers/commom.helper';
 import { EventData } from '../interfaces/consumer.interfaces';
 import Currency from '../models/Currency/index';
 import resultCall from '../helpers/consumer.helper';
-import { errorLog, kafka, orderTypes } from '../utils/constents.util';
+import { errorLog, kafka, orderTypes } from '../utils/constant.util';
 
 const redpanda = new Kafka({
    brokers: [process.env.KAFKA_URL],

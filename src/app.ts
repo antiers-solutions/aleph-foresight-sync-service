@@ -9,7 +9,7 @@ import Worker from './worker/index';
 import dbConnectionHandler from '../src/mongoDB/connection';
 import SocketHelper from './helpers/socket.helper';
 import worker from './worker/index';
-import { mongoDb } from './utils/constents.util';
+import { mongoDb } from './utils/constant.util';
 declare global {
    // eslint-disable-next-line @typescript-eslint/no-namespace
    namespace NodeJS {

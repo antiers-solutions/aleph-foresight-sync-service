@@ -1,4 +1,4 @@
-import { connections, socketSuccess } from '../utils/constents.util';
+import { connections, socketSuccess } from '../utils/constant.util';
 
 const { Logger } = require('../logger');
 

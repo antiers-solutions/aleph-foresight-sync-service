@@ -6,7 +6,7 @@ import {
    chainInitialisedLog,
    connections,
    system,
-} from '../utils/constents.util';
+} from '../utils/constant.util';
 import '../connection';
 const { Logger } = require('../logger');
 let wsProvider = new WsProvider(process.env.SOCKET_HOST);
@@ -18,7 +18,7 @@ const EventData = {
 
 let api: any;
 
-export const chainInitialise = async (controllName: string) => {
+export const chainInitialise = async (controlName: string) => {
    const registry = new TypeRegistry();
    registry.register({
       EventData,
@@ -29,7 +29,7 @@ export const chainInitialise = async (controllName: string) => {
    });
    api = await ApiPromise.create({ provider: wsProvider, registry });
    api.on(connections.disconnected, () =>
-      Logger.info(chainInitialisedLog(controllName))
+      Logger.info(chainInitialisedLog(controlName))
    );
    api.on(connections.disconnected, async () => {
       try {
@@ -41,7 +41,7 @@ export const chainInitialise = async (controllName: string) => {
          Logger.error(apiError + error);
       }
    });
-   Logger.info(chainInitialisedLog(controllName));
+   Logger.info(chainInitialisedLog(controlName));
    setInterval(async () => {
       if (api.isConnected === false) {
          wsProvider = new WsProvider(process.env.SOCKET_HOST);

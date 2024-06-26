@@ -1,6 +1,6 @@
 import { Kafka } from 'kafkajs';
 import '../connection';
-import { errorLog, kafka } from '../utils/constents.util';
+import { errorLog, kafka } from '../utils/constant.util';
 const redpanda = new Kafka({
    brokers: [process.env.KAFKA_URL],
 });
