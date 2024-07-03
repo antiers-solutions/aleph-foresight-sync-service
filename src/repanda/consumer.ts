@@ -35,7 +35,7 @@ export async function connect() {
                         eventId: formattedValue.message,
                      });
                      const time: number | string = timeStampToString(
-                        Number(+event?.targetDateTime + 120) * 1000
+                        Number(+event?.targetDateTime + 60) * 1000
                      );
                      const data: EventData = await Events.findOneAndUpdate(
                         {
@@ -45,6 +45,10 @@ export async function connect() {
                            eventResultTime: time,
                         }
                      );
+
+                     console.log('\n');
+                     console.log('getResults : ', data);
+                     console.log('\n');
                   } catch (error) {}
                   break;
                case kafka.eventResult:
@@ -59,7 +63,10 @@ export async function connect() {
                      currencyData.price > event.priceLevel
                         ? (result = orderTypes.no)
                         : (result = orderTypes.yes);
-                     await resultCall(event.eventId, result);
+                     const data = await resultCall(event.eventId, result);
+                     console.log('\n');
+                     console.log('eventResult : ', data);
+                     console.log('\n');
                   } catch (error) {
                      errorLog(error);
                   }

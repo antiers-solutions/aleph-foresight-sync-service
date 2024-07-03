@@ -31,7 +31,7 @@ class App {
          this.app = express();
          this.initializeMiddlewares();
          this.initializeControllers();
-         this.api = await chainInitialise('Native chain');
+         // this.api = await chainInitialise('Native chain');
          this.count = 0;
          this.CronWorker();
          this.NativeWorker();

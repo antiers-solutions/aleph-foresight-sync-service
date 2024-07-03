@@ -20,6 +20,7 @@ export interface IEvents extends Document {
    updatedAt: Date;
    eventExpireTime: string;
    eventResultTime: string;
+   reward: number;
 }
 
 const eventsSchema: Schema<IEvents> = new Schema(
@@ -41,6 +42,7 @@ const eventsSchema: Schema<IEvents> = new Schema(
       status: { type: Number },
       eventExpireTime: { type: String },
       eventResultTime: { type: String },
+      reward: { type: Number, default: 0 },
    },
 
    {

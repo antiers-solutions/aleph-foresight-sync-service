@@ -63,7 +63,13 @@ const chain = {
    log: 'Log',
    eventInfo: 'event_info',
    resultInfo: 'response_info',
-   resultEvent: 'result_event',
+   resultEvent: 'event_result_info',
+   withdrawInfo: 'withdraw_info',
+   platformFeeInfo: 'platform_fee_info',
+   eventCreationFeeInfo: 'event_creation_fee_info',
+   claimedRewardInfo: 'claimed_reward_info',
+   newEventExpirationTimeInfo: 'new_event_expiration_time_info',
+   newBetClosureTimeInfo: 'new_bet_closure_time_info',
 };
 
 export {

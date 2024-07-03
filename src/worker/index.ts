@@ -12,97 +12,223 @@ import timeStampToString from '../helpers/commom.helper';
 import Currency from '../models/Currency/index';
 import { chain, kafka, priceListUrl } from '../utils/constant.util';
 import { LogsMap, LogsStructure } from '../interfaces/worker.interfaces';
+import Block from '../models/Block';
+import updateWithdraw from '../helpers/withdraw.helper';
+import claimWithdraw from '../helpers/claim.helper';
+const web3 = new Web3(process.env.SOCKET_HOST);
 
-const web3 = new Web3(process.env.SOCKET_URL);
-const contract = new web3.eth.Contract(
-   ContractAbi,
-   process.env.CONTRACT_ADDRESS
-);
+// const contract = new web3.eth.Contract(
+//    ContractAbi,
+//    process.env.CONTRACT_ADDRESS
+// );
+
 // const account = web3.eth.accounts.wallet.add(process.env.ADMIN).get(0);
 
 class Worker {
    public connection: any;
 
+   // async Native(api: any) {
+   //    cron.schedule('*/6 * * * * *', async () => {
+   //       try {
+   //          const metadata = await api.rpc.state.getMetadata();
+   //          await api.registry.setMetadata(metadata);
+   //          const blockHeader = await api.rpc.chain.getHeader();
+   //          const blockNumber = await blockHeader.number.toNumber();
+   //          console.log('blockNumber == > ', blockNumber);
+
+   //          for (let index = blockNumber; index <= blockNumber; index++) {
+   //             const blockHash = await api.rpc.chain.getBlockHash(index);
+   //             const block = await api.rpc.chain.getBlock(blockHash);
+   //             let events = 0;
+   //             const arr: LogsStructure[] = [];
+   //             block.block.header.forEach((logs: any) => {
+   //                arr.push(logs.toHuman());
+   //             });
+   //             const allRecords = await api?.query?.system?.events?.at(
+   //                block?.block?.header?.hash
+   //             );
+   //             let totalTransactionSize = 0;
+   //             block?.block?.extrinsics?.forEach(
+   //                (
+   //                   { method: { event, section } }: any,
+   //                   index: any,
+   //                   extrinsic: any
+   //                ) => {
+   //                   totalTransactionSize = extrinsic.encodedLength;
+   //                   allRecords
+   //                      .filter(
+   //                         ({ phase }: any) =>
+   //                            phase.isApplyExtrinsic &&
+   //                            phase.asApplyExtrinsic.eq(index)
+   //                      )
+   //                      .map(async ({ event }: any) => {
+   //                         events = events + 1;
+   //                         if (
+   //                            (event.toHuman().section == chain.evm ||
+   //                               event.toHuman().section == chain.ethereum) &&
+   //                            (event.toHuman().method == chain.executed ||
+   //                               event.toHuman().method == chain.log)
+   //                         ) {
+   //                            if (event?.data?.transactionHash) {
+   //                               const transactionReceipt =
+   //                                  await web3.eth.getTransactionReceipt(
+   //                                     event?.data?.transactionHash
+   //                                  );
+   //                               abidecoder.addABI(ContractAbi);
+   //                               const item = abidecoder.decodeLogs(
+   //                                  transactionReceipt?.logs
+   //                               );
+
+   //                               if (item[0]?.name == chain.eventInfo) {
+   //                                  saveEvent(
+   //                                     item,
+   //                                     event?.data?.transactionHash
+   //                                  );
+   //                               }
+
+   //                               if (item[0]?.name == chain.resultInfo) {
+   //                                  saveOrder(
+   //                                     item,
+   //                                     event?.data?.transactionHash
+   //                                  );
+   //                               }
+
+   //                               if (item[0]?.name == chain.resultEvent) {
+   //                                  console.log('item : ', item);
+   //                               }
+   //                            }
+   //                         }
+   //                         if (
+   //                            event.toHuman().section == chain.ethereum &&
+   //                            event.toHuman().method == chain.executed
+   //                         ) {
+   //                         }
+   //                      });
+   //                }
+   //             );
+   //          }
+   //       } catch (error) {
+   //          return error;
+   //       }
+   //    });
+   // }
+
    async Native(api: any) {
       cron.schedule('*/6 * * * * *', async () => {
          try {
-            const metadata = await api.rpc.state.getMetadata();
-            await api.registry.setMetadata(metadata);
-            const blockHeader = await api.rpc.chain.getHeader();
-            const blockNumber = await blockHeader.number.toNumber();
-            console.log('blockNumber == > ', blockNumber);
-
-            for (let index = blockNumber; index <= blockNumber; index++) {
-               const blockHash = await api.rpc.chain.getBlockHash(index);
-               const block = await api.rpc.chain.getBlock(blockHash);
-               let events = 0;
-               const arr: LogsStructure[] = [];
-               block.block.header.forEach((logs: any) => {
-                  arr.push(logs.toHuman());
+            const blockNumber = await web3.eth.getBlockNumber();
+            console.log('Current block number:', blockNumber);
+            const block = await web3.eth.getBlock(blockNumber);
+            const currentDbBlock = await Block.findOne()
+               .sort({ field: 'asc', _id: -1 })
+               .limit(1);
+            if (!currentDbBlock) {
+               const currentBlock = new Block({
+                  hash: block.hash,
+                  number: block.number,
+                  size: block.size,
+                  timeStamp: block.timeStamp,
+                  gasUsed: block.gasUsed,
                });
-               const allRecords = await api?.query?.system?.events?.at(
-                  block?.block?.header?.hash
-               );
-               let totalTransactionSize = 0;
-               block?.block?.extrinsics?.forEach(
-                  (
-                     { method: { event, section } }: any,
-                     index: any,
-                     extrinsic: any
-                  ) => {
-                     totalTransactionSize = extrinsic.encodedLength;
-                     allRecords
-                        .filter(
-                           ({ phase }: any) =>
-                              phase.isApplyExtrinsic &&
-                              phase.asApplyExtrinsic.eq(index)
-                        )
-                        .map(async ({ event }: any) => {
-                           events = events + 1;
-                           if (
-                              (event.toHuman().section == chain.evm ||
-                                 event.toHuman().section == chain.ethereum) &&
-                              (event.toHuman().method == chain.executed ||
-                                 event.toHuman().method == chain.log)
-                           ) {
-                              if (event?.data?.transactionHash) {
-                                 const transactionReceipt =
-                                    await web3.eth.getTransactionReceipt(
-                                       event?.data?.transactionHash
-                                    );
-                                 abidecoder.addABI(ContractAbi);
-                                 const item = abidecoder.decodeLogs(
-                                    transactionReceipt?.logs
+
+               await currentBlock.save();
+               console.log('new block saved ');
+            } else {
+               if (currentDbBlock?.number < blockNumber) {
+                  console.log(
+                     'debug mode : ',
+                     currentDbBlock?.number,
+                     blockNumber
+                  );
+
+                  for (
+                     let index = ++currentDbBlock.number;
+                     index <= blockNumber;
+                     index++
+                  ) {
+                     console.log('blocks to push ', index);
+                     const blockByNumber = await web3.eth.getBlock(index);
+                     const currentBlock = new Block({
+                        hash: blockByNumber.hash,
+                        number: blockByNumber.number,
+                        size: blockByNumber.size,
+                        timeStamp: blockByNumber.timeStamp,
+                        gasUsed: blockByNumber.gasUsed,
+                     });
+                     console.log(blockByNumber.transactions);
+                     blockByNumber.transactions.forEach(
+                        async (transactionHash: string) => {
+                           const transactionReceipt =
+                              await web3.eth.getTransactionReceipt(
+                                 transactionHash
+                              );
+                           abidecoder.addABI(ContractAbi);
+                           const item = abidecoder.decodeLogs(
+                              transactionReceipt?.logs
+                           );
+
+                           console.log('this is the item ', item);
+
+                           switch (item[0]?.name) {
+                              case chain.eventInfo:
+                                 saveEvent(item, transactionHash);
+                                 break;
+                              case chain.resultInfo:
+                                 saveOrder(item, transactionHash);
+                                 break;
+                              case chain.resultEvent:
+                                 console.log(item[0]?.name + ' got triggered');
+                                 break;
+                              case chain.withdrawInfo:
+                                 console.log(item[0]?.name + ' got triggered');
+                                 console.log(
+                                    item[0]?.events[0]?.value + ' got triggered'
                                  );
-
-                                 if (item[0]?.name == chain.eventInfo) {
-                                    saveEvent(
-                                       item,
-                                       event?.data?.transactionHash
-                                    );
-                                 }
-
-                                 if (item[0]?.name == chain.resultInfo) {
-                                    saveOrder(
-                                       item,
-                                       event?.data?.transactionHash
-                                    );
-                                 }
-
-                                 if (item[0]?.name == chain.resultEvent) {
-                                    console.log('item : ', item);
-                                 }
-                              }
+                                 console.log(
+                                    item[0]?.events[1]?.value + ' got triggered'
+                                 );
+                                 console.log(
+                                    item[0]?.events[2]?.value + ' got triggered'
+                                 );
+                                 console.log(
+                                    item[0]?.events[3]?.value + ' got triggered'
+                                 );
+                                 updateWithdraw(item);
+                                 break;
+                              case chain.claimedRewardInfo:
+                                 console.log(item[0]?.name + ' claim');
+                                 console.log(
+                                    item[0]?.events[0]?.value + ' eventid'
+                                 );
+                                 console.log(
+                                    item[0]?.events[1]?.value +
+                                       '  wallet address '
+                                 );
+                                 console.log(
+                                    item[0]?.events[2]?.value +
+                                       '  chaim  got triggered'
+                                 );
+                                 console.log(
+                                    item[0]?.events[3]?.value + '  rewoard '
+                                 );
+                                 claimWithdraw(item);
+                                 break;
+                              default:
+                                 // Handle default case if needed
+                                 break;
                            }
-                           if (
-                              event.toHuman().section == chain.ethereum &&
-                              event.toHuman().method == chain.executed
-                           ) {
-                           }
-                        });
+                        }
+                     );
+
+                     await currentBlock.save();
+                     console.log('new block saved ', index);
                   }
-               );
+               }
+
+               console.log('currentDB : ', currentDbBlock.number);
             }
+
+            // console.log('block :', block);
          } catch (error) {
             return error;
          }
@@ -111,8 +237,6 @@ class Worker {
 
    async PriceUpdate() {
       cron.schedule('*/30 * * * * *', async () => {
-         // console.log(">>>>>------->>>>>>>> ", contract.methods);
-
          try {
             const options = {
                method: 'GET',
@@ -136,6 +260,9 @@ class Worker {
                   );
                }
             );
+            console.log('\n');
+            console.log('Price Updated');
+            console.log('\n');
          } catch (error) {
             console.error(error);
          }
@@ -163,7 +290,6 @@ class Worker {
    }
    async ResultCheck() {
       cron.schedule('*/60 * * * * *', async () => {
-         console.log('testing 123');
          try {
             const eventResult = await Producer.getConnection(kafka.eventResult);
             const currentTimeStamp = +new Date();

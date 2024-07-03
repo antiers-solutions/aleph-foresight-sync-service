@@ -4,6 +4,64 @@ const ContractAbi: any = [
       inputs: [
          {
             indexed: false,
+            internalType: 'address',
+            name: 'previousAdmin',
+            type: 'address',
+         },
+         {
+            indexed: false,
+            internalType: 'address',
+            name: 'newAdmin',
+            type: 'address',
+         },
+      ],
+      name: 'AdminChanged',
+      type: 'event',
+   },
+   {
+      anonymous: false,
+      inputs: [
+         {
+            indexed: true,
+            internalType: 'address',
+            name: 'beacon',
+            type: 'address',
+         },
+      ],
+      name: 'BeaconUpgraded',
+      type: 'event',
+   },
+   {
+      anonymous: false,
+      inputs: [
+         {
+            indexed: false,
+            internalType: 'uint8',
+            name: 'version',
+            type: 'uint8',
+         },
+      ],
+      name: 'Initialized',
+      type: 'event',
+   },
+   {
+      anonymous: false,
+      inputs: [
+         {
+            indexed: true,
+            internalType: 'address',
+            name: 'implementation',
+            type: 'address',
+         },
+      ],
+      name: 'Upgraded',
+      type: 'event',
+   },
+   {
+      anonymous: false,
+      inputs: [
+         {
+            indexed: false,
             internalType: 'string',
             name: 'event_id',
             type: 'string',
@@ -18,6 +76,12 @@ const ContractAbi: any = [
             indexed: false,
             internalType: 'uint256',
             name: 'amount_claimed',
+            type: 'uint256',
+         },
+         {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'user_created_event_reward',
             type: 'uint256',
          },
       ],
@@ -115,7 +179,7 @@ const ContractAbi: any = [
             type: 'uint256',
          },
       ],
-      name: 'modified_bet_closure_time',
+      name: 'new_bet_closure_time_info',
       type: 'event',
    },
    {
@@ -146,7 +210,7 @@ const ContractAbi: any = [
             type: 'uint256',
          },
       ],
-      name: 'modified_event_expiration_time',
+      name: 'new_event_expiration_time_info',
       type: 'event',
    },
    {
@@ -216,9 +280,9 @@ const ContractAbi: any = [
          },
          {
             indexed: false,
-            internalType: 'string',
-            name: 'withdraw_status',
-            type: 'string',
+            internalType: 'uint256',
+            name: 'user_created_event_reward',
+            type: 'uint256',
          },
       ],
       name: 'withdraw_info',
@@ -369,6 +433,19 @@ const ContractAbi: any = [
       name: 'initialize',
       outputs: [],
       stateMutability: 'nonpayable',
+      type: 'function',
+   },
+   {
+      inputs: [],
+      name: 'proxiableUUID',
+      outputs: [
+         {
+            internalType: 'bytes32',
+            name: '',
+            type: 'bytes32',
+         },
+      ],
+      stateMutability: 'view',
       type: 'function',
    },
    {
@@ -533,6 +610,37 @@ const ContractAbi: any = [
       name: 'set_result_event',
       outputs: [],
       stateMutability: 'nonpayable',
+      type: 'function',
+   },
+   {
+      inputs: [
+         {
+            internalType: 'address',
+            name: 'newImplementation',
+            type: 'address',
+         },
+      ],
+      name: 'upgradeTo',
+      outputs: [],
+      stateMutability: 'nonpayable',
+      type: 'function',
+   },
+   {
+      inputs: [
+         {
+            internalType: 'address',
+            name: 'newImplementation',
+            type: 'address',
+         },
+         {
+            internalType: 'bytes',
+            name: 'data',
+            type: 'bytes',
+         },
+      ],
+      name: 'upgradeToAndCall',
+      outputs: [],
+      stateMutability: 'payable',
       type: 'function',
    },
    {

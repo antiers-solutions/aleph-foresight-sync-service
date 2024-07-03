@@ -23,11 +23,24 @@ const saveEvent = async (item: any, txnHash: string) => {
          resolver: 'resolver123',
          status: 1,
          eventExpireTime: timeStampToString(
-            Number(item[0]?.events[3]?.value * 1000)
+            Number(item[0]?.events[3]?.value * 1000) + 60
          ),
       };
       const event = new Events(data);
-      return await event.save();
+      console.log('\n');
+      console.log('event saved');
+      console.log('\n');
+      const resultData = await event.save();
+
+      console.log('++++++++++++++++++++++');
+      console.log('++++++++++++++++++++++');
+
+      console.log(resultData);
+
+      console.log('++++++++++++++++++++++');
+      console.log('++++++++++++++++++++++');
+
+      return resultData;
    } catch (error: any) {
       return error;
    }

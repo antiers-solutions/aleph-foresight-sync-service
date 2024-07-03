@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IOrder extends Document {
+   bidType: string;
    orderType: boolean;
    amount: number;
    eventId: string;
@@ -13,6 +14,7 @@ export interface IOrder extends Document {
 
 const orderSchema: Schema<IOrder> = new Schema(
    {
+      bidType: { type: String },
       orderType: { type: Boolean },
       amount: { type: Number },
       eventId: { type: String },
