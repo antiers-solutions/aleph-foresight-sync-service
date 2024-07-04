@@ -250,6 +250,12 @@ const ContractAbi: any = [
          {
             indexed: false,
             internalType: 'uint256',
+            name: 'updated_betting_amount',
+            type: 'uint256',
+         },
+         {
+            indexed: false,
+            internalType: 'uint256',
             name: 'betting_amount',
             type: 'uint256',
          },

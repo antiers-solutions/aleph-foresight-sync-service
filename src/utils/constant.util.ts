@@ -62,7 +62,7 @@ const chain = {
    executed: 'Executed',
    log: 'Log',
    eventInfo: 'event_info',
-   resultInfo: 'response_info',
+   responseInfo: 'response_info',
    resultEvent: 'event_result_info',
    withdrawInfo: 'withdraw_info',
    platformFeeInfo: 'platform_fee_info',

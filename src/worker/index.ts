@@ -173,7 +173,7 @@ class Worker {
                               case chain.eventInfo:
                                  saveEvent(item, transactionHash);
                                  break;
-                              case chain.resultInfo:
+                              case chain.responseInfo:
                                  saveOrder(item, transactionHash);
                                  break;
                               case chain.resultEvent:

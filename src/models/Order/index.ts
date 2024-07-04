@@ -10,6 +10,7 @@ export interface IOrder extends Document {
    txnId: string;
    createdAt: Date;
    updatedAt: Date;
+   currentBet: number;
 }
 
 const orderSchema: Schema<IOrder> = new Schema(
@@ -18,6 +19,7 @@ const orderSchema: Schema<IOrder> = new Schema(
       orderType: { type: Boolean },
       amount: { type: Number },
       eventId: { type: String },
+      currentBet: { type: Number },
       userId: { type: String },
       fees: { type: Number },
       txnId: { type: String },
