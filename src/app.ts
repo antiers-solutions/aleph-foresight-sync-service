@@ -23,7 +23,6 @@ const globalData: any = global;
 
 class App {
    public app: express.Application;
-   public api: any;
    public count: number;
 
    constructor() {
@@ -31,7 +30,6 @@ class App {
          this.app = express();
          this.initializeMiddlewares();
          this.initializeControllers();
-         // this.api = await chainInitialise('Native chain');
          this.count = 0;
          this.CronWorker();
          this.NativeWorker();
@@ -79,7 +77,7 @@ class App {
    }
 
    async NativeWorker() {
-      Worker.Native(await this.api);
+      Worker.Native();
    }
 
    async BidWorker() {

@@ -1,15 +1,16 @@
+const Web3 = require('web3');
 import Events from '../models/Events/index';
 import ContractAbi from '../contracts/contract.abi';
 import '../connection';
 import { errorLog } from '../utils/constant.util';
-const Web3 = require('web3');
-const web3 = new Web3(process.env.SOCKET_HOST);
 const privateKey = process.env.ADMIN;
 const contractAddress = process.env.CONTRACT_ADDRESS;
-const contract = new web3.eth.Contract(ContractAbi, contractAddress);
-const account = web3.eth.accounts.wallet.add(privateKey).address;
+
 const resultCall = async (eventId: string, resultType: string) => {
    try {
+      const web3 = new Web3(process.env.SOCKET_HOST);
+      const contract = new web3.eth.Contract(ContractAbi, contractAddress);
+      const account = web3.eth.accounts.wallet.add(privateKey).address;
       const txObject = contract.methods.set_result_event(
          eventId.trim(),
          resultType.trim()
