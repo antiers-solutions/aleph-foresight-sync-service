@@ -84,6 +84,12 @@ const ContractAbi: any = [
             name: 'user_created_event_reward',
             type: 'uint256',
          },
+         {
+            indexed: false,
+            internalType: 'string',
+            name: 'event_result',
+            type: 'string',
+         },
       ],
       name: 'claimed_reward_info',
       type: 'event',

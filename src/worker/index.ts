@@ -11,10 +11,9 @@ import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
 import Currency from '../models/Currency/index';
 import { chain, kafka, priceListUrl } from '../utils/constant.util';
-import { LogsMap, LogsStructure } from '../interfaces/worker.interfaces';
 import Block from '../models/Block';
 import updateWithdraw from '../helpers/withdraw.helper';
-import claimWithdraw from '../helpers/claim.helper';
+import claimReward from '../helpers/claim.helper';
 let web3 = new Web3(process.env.SOCKET_HOST);
 
 class Worker {
@@ -123,7 +122,7 @@ class Worker {
                                  console.log(
                                     item[0]?.events[3]?.value + '  rewoard '
                                  );
-                                 claimWithdraw(item);
+                                 claimReward(item);
                                  break;
                               default:
                                  // Handle default case if needed
