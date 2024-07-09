@@ -157,34 +157,34 @@ class Worker {
 
    async PriceUpdate() {
       cron.schedule('*/30 * * * * *', async () => {
-         // try {
-         //    const options = {
-         //       method: 'GET',
-         //       url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
-         //       headers: {
-         //          Accept: 'application/json',
-         //          'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
-         //       },
-         //       params: {
-         //          symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
-         //          convert: 'USD',
-         //       },
-         //    };
-         //    const prices = await axios.request(options);
-         //    Object.entries(prices.data.data).forEach(
-         //       async ([key, value]: [string, any]) => {
-         //          await Currency.findOneAndUpdate(
-         //             { symbol: key },
-         //             { price: value?.quote?.USD?.price }
-         //          );
-         //       }
-         //    );
-         //    console.log('\n');
-         //    console.log('Price Updated');
-         //    console.log('\n');
-         // } catch (error) {
-         //    console.error(error);
-         // }
+         try {
+            const options = {
+               method: 'GET',
+               url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
+               headers: {
+                  Accept: 'application/json',
+                  'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
+               },
+               params: {
+                  symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
+                  convert: 'USD',
+               },
+            };
+            const prices = await axios.request(options);
+            Object.entries(prices.data.data).forEach(
+               async ([key, value]: [string, any]) => {
+                  await Currency.findOneAndUpdate(
+                     { symbol: key },
+                     { price: value?.quote?.USD?.price }
+                  );
+               }
+            );
+            console.log('\n');
+            console.log('Price Updated');
+            console.log('\n');
+         } catch (error) {
+            console.error(error);
+         }
       });
    }
 
