@@ -16,6 +16,7 @@ import updateWithdraw from '../helpers/withdraw.helper';
 import claimReward from '../helpers/claim.helper';
 import updateOrder from '../helpers/result.helper';
 let web3 = new Web3(process.env.SOCKET_HOST);
+import * as Sentry from '@sentry/node';
 
 class Worker {
    public connection: any;
@@ -150,6 +151,7 @@ class Worker {
 
             // console.log('block :', block);
          } catch (error) {
+            Sentry.captureException(error);
             return error;
          }
       });
@@ -183,6 +185,8 @@ class Worker {
             console.log('Price Updated');
             console.log('\n');
          } catch (error) {
+            Sentry.captureException(error);
+
             console.error(error);
          }
       });
@@ -203,6 +207,8 @@ class Worker {
                getResults(String(item.eventId));
             });
          } catch (error) {
+            Sentry.captureException(error);
+
             console.error(error);
          }
       });
@@ -222,6 +228,8 @@ class Worker {
                eventResult(String(item.eventId));
             });
          } catch (error) {
+            Sentry.captureException(error);
+
             console.error(error);
          }
       });

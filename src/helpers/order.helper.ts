@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { errorLog, orderTypes } from '../utils/constant.util';
 import Order from '../models/Order/index';
 
@@ -23,6 +24,7 @@ const saveOrder = async (item: any, txnHash: string) => {
       console.log('order saved !');
       console.log('\n');
    } catch (error) {
+      Sentry.captureException(error);
       errorLog(error);
    }
 };

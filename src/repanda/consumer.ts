@@ -1,5 +1,6 @@
 import { Kafka } from 'kafkajs';
 import { v4 as uuidv4 } from 'uuid';
+import * as Sentry from '@sentry/node';
 import '../connection';
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
@@ -49,7 +50,9 @@ export async function connect() {
                      console.log('\n');
                      console.log('getResults : ', data);
                      console.log('\n');
-                  } catch (error) {}
+                  } catch (error) {
+                     Sentry.captureException(error);
+                  }
                   break;
                case kafka.eventResult:
                   try {
@@ -73,6 +76,8 @@ export async function connect() {
                      console.log('eventResult : ', data);
                      console.log('\n');
                   } catch (error) {
+                     Sentry.captureException(error);
+
                      errorLog(error);
                   }
                   break;
@@ -82,6 +87,8 @@ export async function connect() {
          },
       });
    } catch (error) {
+      Sentry.captureException(error);
+
       errorLog(error);
    }
 }
@@ -89,6 +96,7 @@ export async function disconnect() {
    try {
       await consumer.disconnect();
    } catch (error) {
+      Sentry.captureException(error);
       errorLog(error);
    }
 }

@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/node';
 import { errorLog, orderTypes } from '../utils/constant.util';
 import Order from '../models/Order/index';
 import Events from '../models/Events/index';
@@ -20,6 +21,7 @@ const claimReward = async (item: any) => {
 
       // }
    } catch (error) {
+      Sentry.captureException(error);
       errorLog(error);
    }
 };

@@ -1,4 +1,6 @@
 import { errorLog, orderTypes } from '../utils/constant.util';
+import * as Sentry from '@sentry/node';
+
 import Order from '../models/Order/index';
 import Events from '../models/Events/index';
 
@@ -19,6 +21,7 @@ const updateWithdraw = async (item: any) => {
 
       // }
    } catch (error) {
+      Sentry.captureException(error);
       errorLog(error);
    }
 };

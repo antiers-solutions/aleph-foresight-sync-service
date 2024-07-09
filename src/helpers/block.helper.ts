@@ -23,6 +23,8 @@ class BlockHelper {
             return blockNumber - 1;
          }
       } catch (err: any) {
+         Sentry.captureException(err);
+
          return err;
       }
    };

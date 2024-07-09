@@ -1,4 +1,5 @@
 const Web3 = require('web3');
+import * as Sentry from '@sentry/node';
 import Events from '../models/Events/index';
 import ContractAbi from '../contracts/contract.abi';
 import '../connection';
@@ -54,6 +55,7 @@ const resultCall = async (eventId: string, resultType: string) => {
 
       return true;
    } catch (error) {
+      Sentry.captureException(error);
       errorLog(error);
       return false;
    }

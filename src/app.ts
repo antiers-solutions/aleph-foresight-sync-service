@@ -1,4 +1,6 @@
 import * as bodyParser from 'body-parser';
+import './instrument';
+import * as Sentry from '@sentry/node';
 import * as express from 'express';
 import * as cron from 'node-cron';
 import { Response, Request } from 'express';
@@ -40,6 +42,7 @@ class App {
    }
 
    public listen() {
+      Sentry.setupExpressErrorHandler(this.app);
       const instance: Server = this.app.listen(
          process.env.PORT ? process.env.PORT : 7200,
          () => {
@@ -60,6 +63,15 @@ class App {
    }
 
    private initializeMiddlewares() {
+      this.app.use(function onError(
+         _err: any,
+         req: Request,
+         res: any,
+         _next: express.NextFunction
+      ) {
+         res.statusCode = 500;
+         res.end(res.sentry + '\n');
+      });
       this.app.use(bodyParser.json());
       this.app.use(morganMiddleware);
    }

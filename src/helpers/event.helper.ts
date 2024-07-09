@@ -1,7 +1,8 @@
+import * as Sentry from '@sentry/node';
+const axios = require('axios');
 import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
 import { resolutionSource } from '../utils/constant.util';
-const axios = require('axios');
 
 const saveEvent = async (item: any, txnHash: string) => {
    try {
@@ -44,6 +45,7 @@ const saveEvent = async (item: any, txnHash: string) => {
 
       return resultData;
    } catch (error: any) {
+      Sentry.captureException(error);
       return error;
    }
 };

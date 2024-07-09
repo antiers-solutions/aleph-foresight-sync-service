@@ -27,6 +27,7 @@ async function start() {
             sendMessage(input);
          });
       } else {
+         Sentry.captureException(kafka.initialiseFailed);
          console.error(kafka.initialiseFailed);
       }
    });
@@ -39,9 +40,11 @@ process.on(kafka.sigint, async () => {
       await Consumer.disconnect();
       rl.close();
    } catch (err) {
+      Sentry.captureException(err);
       console.error(kafka.cleanupError, err);
       process.exit(1);
    } finally {
+      Sentry.captureException(kafka.cleanupFinish);
       console.log(kafka.cleanupFinish);
       process.exit(0);
    }
