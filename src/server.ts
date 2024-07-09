@@ -34,7 +34,6 @@ async function start() {
 }
 start();
 process.on(kafka.sigint, async () => {
-   console.log(kafka.close);
    try {
       await Producer.disconnect();
       await Consumer.disconnect();
@@ -45,7 +44,6 @@ process.on(kafka.sigint, async () => {
       process.exit(1);
    } finally {
       Sentry.captureException(kafka.cleanupFinish);
-      console.log(kafka.cleanupFinish);
       process.exit(0);
    }
 });

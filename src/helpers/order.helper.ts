@@ -19,10 +19,6 @@ const saveOrder = async (item: any, txnHash: string) => {
 
       const order = new Order(data);
       await order.save();
-
-      console.log('\n');
-      console.log('order saved !');
-      console.log('\n');
    } catch (error) {
       Sentry.captureException(error);
       errorLog(error);

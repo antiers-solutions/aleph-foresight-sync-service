@@ -29,8 +29,6 @@ class Worker {
             if (!blockNumber) {
                web3 = new Web3(process.env.SOCKET_HOST);
             }
-
-            console.log('Current block number:', blockNumber);
             const block = await web3.eth.getBlock(blockNumber);
             const currentDbBlock = await Block.findOne()
                .sort({ field: 'asc', _id: -1 })
@@ -45,21 +43,14 @@ class Worker {
                });
 
                await currentBlock.save();
-               console.log('new block saved ');
             } else {
                if (currentDbBlock?.number < blockNumber) {
-                  console.log(
-                     'debug mode : ',
-                     currentDbBlock?.number,
-                     blockNumber
-                  );
-
                   for (
                      let index = ++currentDbBlock.number;
                      index <= blockNumber;
                      index++
                   ) {
-                     console.log('blocks to push ', index);
+                     console.log('block saved ', index);
                      const blockByNumber = await web3.eth.getBlock(index);
                      const currentBlock = new Block({
                         hash: blockByNumber.hash,
@@ -80,8 +71,6 @@ class Worker {
                               transactionReceipt?.logs
                            );
 
-                           console.log('this is the item ', item);
-
                            switch (item[0]?.name) {
                               case chain.eventInfo:
                                  saveEvent(item, transactionHash);
@@ -90,48 +79,12 @@ class Worker {
                                  saveOrder(item, transactionHash);
                                  break;
                               case chain.resultEvent:
-                                 console.log(
-                                    item[0]?.events[0]?.value +
-                                       ' <<<<<<<<<<<<<,--------------'
-                                 );
-                                 console.log(
-                                    item[0]?.events[1]?.value +
-                                       '<----------------------'
-                                 );
                                  updateOrder(item);
                                  break;
                               case chain.withdrawInfo:
-                                 console.log(item[0]?.name + ' got triggered');
-                                 console.log(
-                                    item[0]?.events[0]?.value + ' got triggered'
-                                 );
-                                 console.log(
-                                    item[0]?.events[1]?.value + ' got triggered'
-                                 );
-                                 console.log(
-                                    item[0]?.events[2]?.value + ' got triggered'
-                                 );
-                                 console.log(
-                                    item[0]?.events[3]?.value + ' got triggered'
-                                 );
                                  updateWithdraw(item);
                                  break;
                               case chain.claimedRewardInfo:
-                                 console.log(item[0]?.name + ' claim');
-                                 console.log(
-                                    item[0]?.events[0]?.value + ' eventid'
-                                 );
-                                 console.log(
-                                    item[0]?.events[1]?.value +
-                                       '  wallet address '
-                                 );
-                                 console.log(
-                                    item[0]?.events[2]?.value +
-                                       '  chaim  got triggered'
-                                 );
-                                 console.log(
-                                    item[0]?.events[3]?.value + '  rewoard '
-                                 );
                                  claimReward(item);
                                  break;
                               default:
@@ -142,14 +95,11 @@ class Worker {
                      );
 
                      await currentBlock.save();
-                     console.log('new block saved ', index);
                   }
                }
 
                console.log('currentDB : ', currentDbBlock.number);
             }
-
-            // console.log('block :', block);
          } catch (error) {
             Sentry.captureException(error);
             return error;
@@ -181,9 +131,8 @@ class Worker {
                   );
                }
             );
-            console.log('\n');
+
             console.log('Price Updated');
-            console.log('\n');
          } catch (error) {
             Sentry.captureException(error);
 
@@ -222,7 +171,6 @@ class Worker {
             const data = await Events.find({
                eventResultTime: timeStampToString(currentTimeStamp),
             });
-            console.log('=-=-=-=-=-=-=-=->>>>> ', data);
 
             data.forEach((item) => {
                eventResult(String(item.eventId));

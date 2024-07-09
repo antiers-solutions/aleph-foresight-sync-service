@@ -15,11 +15,6 @@ const claimReward = async (item: any) => {
          { bidType: 'claimed' }
       );
       await Events.updateOne({ eventId }, { $inc: { reward: reward } });
-      console.log('\n');
-      console.log('claim updated !');
-      console.log('\n');
-
-      // }
    } catch (error) {
       Sentry.captureException(error);
       errorLog(error);

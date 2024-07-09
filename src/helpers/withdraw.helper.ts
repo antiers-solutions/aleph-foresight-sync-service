@@ -15,11 +15,6 @@ const updateWithdraw = async (item: any) => {
          { bidType: 'withdraw' }
       );
       await Events.updateOne({ eventId }, { $inc: { reward: reward } });
-      console.log('\n');
-      console.log('withdraw updated !');
-      console.log('\n');
-
-      // }
    } catch (error) {
       Sentry.captureException(error);
       errorLog(error);

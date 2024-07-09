@@ -30,19 +30,7 @@ const saveEvent = async (item: any, txnHash: string) => {
          ),
       };
       const event = new Events(data);
-      console.log('\n');
-      console.log('event saved');
-      console.log('\n');
       const resultData = await event.save();
-
-      console.log('++++++++++++++++++++++');
-      console.log('++++++++++++++++++++++');
-
-      console.log(resultData);
-
-      console.log('++++++++++++++++++++++');
-      console.log('++++++++++++++++++++++');
-
       return resultData;
    } catch (error: any) {
       Sentry.captureException(error);

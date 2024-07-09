@@ -46,10 +46,6 @@ export async function connect() {
                            eventResultTime: time,
                         }
                      );
-
-                     console.log('\n');
-                     console.log('getResults : ', data);
-                     console.log('\n');
                   } catch (error) {
                      Sentry.captureException(error);
                   }
@@ -67,14 +63,7 @@ export async function connect() {
                         ? (result = orderTypes.no)
                         : (result = orderTypes.yes);
 
-                     console.log('<<<<<<<<<-------------');
-                     console.log('event.eventId : ', event.eventId);
-                     console.log('<<<<<<<<<-------------');
-
                      const data = await resultCall(event.eventId, result);
-                     console.log('\n');
-                     console.log('eventResult : ', data);
-                     console.log('\n');
                   } catch (error) {
                      Sentry.captureException(error);
 
