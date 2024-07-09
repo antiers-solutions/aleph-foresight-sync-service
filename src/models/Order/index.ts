@@ -11,6 +11,7 @@ export interface IOrder extends Document {
    createdAt: Date;
    updatedAt: Date;
    currentBet: number;
+   result: number;
 }
 
 const orderSchema: Schema<IOrder> = new Schema(
@@ -23,6 +24,7 @@ const orderSchema: Schema<IOrder> = new Schema(
       userId: { type: String },
       fees: { type: Number },
       txnId: { type: String },
+      result: { type: Number, default: 0 },
    },
 
    {

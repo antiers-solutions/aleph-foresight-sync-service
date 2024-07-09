@@ -63,6 +63,11 @@ export async function connect() {
                      currencyData.price > event.priceLevel
                         ? (result = orderTypes.no)
                         : (result = orderTypes.yes);
+
+                     console.log('<<<<<<<<<-------------');
+                     console.log('event.eventId : ', event.eventId);
+                     console.log('<<<<<<<<<-------------');
+
                      const data = await resultCall(event.eventId, result);
                      console.log('\n');
                      console.log('eventResult : ', data);

@@ -14,6 +14,7 @@ import { chain, kafka, priceListUrl } from '../utils/constant.util';
 import Block from '../models/Block';
 import updateWithdraw from '../helpers/withdraw.helper';
 import claimReward from '../helpers/claim.helper';
+import updateOrder from '../helpers/result.helper';
 let web3 = new Web3(process.env.SOCKET_HOST);
 
 class Worker {
@@ -88,7 +89,15 @@ class Worker {
                                  saveOrder(item, transactionHash);
                                  break;
                               case chain.resultEvent:
-                                 console.log(item[0]?.name + ' got triggered');
+                                 console.log(
+                                    item[0]?.events[0]?.value +
+                                       ' <<<<<<<<<<<<<,--------------'
+                                 );
+                                 console.log(
+                                    item[0]?.events[1]?.value +
+                                       '<----------------------'
+                                 );
+                                 updateOrder(item);
                                  break;
                               case chain.withdrawInfo:
                                  console.log(item[0]?.name + ' got triggered');
@@ -148,35 +157,34 @@ class Worker {
 
    async PriceUpdate() {
       cron.schedule('*/30 * * * * *', async () => {
-         try {
-            const options = {
-               method: 'GET',
-               url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
-               headers: {
-                  Accept: 'application/json',
-                  'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
-               },
-               params: {
-                  symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
-                  convert: 'USD',
-               },
-            };
-
-            const prices = await axios.request(options);
-            Object.entries(prices.data.data).forEach(
-               async ([key, value]: [string, any]) => {
-                  await Currency.findOneAndUpdate(
-                     { symbol: key },
-                     { price: value?.quote?.USD?.price }
-                  );
-               }
-            );
-            console.log('\n');
-            console.log('Price Updated');
-            console.log('\n');
-         } catch (error) {
-            console.error(error);
-         }
+         // try {
+         //    const options = {
+         //       method: 'GET',
+         //       url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
+         //       headers: {
+         //          Accept: 'application/json',
+         //          'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
+         //       },
+         //       params: {
+         //          symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
+         //          convert: 'USD',
+         //       },
+         //    };
+         //    const prices = await axios.request(options);
+         //    Object.entries(prices.data.data).forEach(
+         //       async ([key, value]: [string, any]) => {
+         //          await Currency.findOneAndUpdate(
+         //             { symbol: key },
+         //             { price: value?.quote?.USD?.price }
+         //          );
+         //       }
+         //    );
+         //    console.log('\n');
+         //    console.log('Price Updated');
+         //    console.log('\n');
+         // } catch (error) {
+         //    console.error(error);
+         // }
       });
    }
 

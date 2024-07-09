@@ -5,7 +5,9 @@ const axios = require('axios');
 
 const saveEvent = async (item: any, txnHash: string) => {
    try {
-      const fetchData = await axios.get(item[0]?.events[0]?.value);
+      const fetchData = await axios.get(
+         process.env.IPFSURL + item[0]?.events[0]?.value
+      );
       const data = {
          eventId: String(item[0]?.events[0]?.value),
          userId: String(item[0]?.events[1]?.value),
