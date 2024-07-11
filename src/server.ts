@@ -1,4 +1,4 @@
-import * as readline from 'node:readline';
+// import * as readline from 'node:readline';
 import * as config from './config';
 import * as Admin from './repanda/admin';
 import * as Producer from './repanda/producer';
@@ -10,34 +10,34 @@ const app = new App();
 
 app.listen();
 
-const rl = readline.createInterface({
-   input: process.stdin,
-   output: process.stdout,
-});
+// const rl = readline.createInterface({
+//    input: process.stdin,
+//    output: process.stdout,
+// });
 
 async function start() {
    const topic = kafka.syncService;
    await Admin.createTopic(topic);
    await Consumer.connect();
-   rl.question('', async function (username) {
-      const sendMessage = await Producer.getConnection(username);
-      if (sendMessage) {
-         rl.on('line', (input) => {
-            readline.moveCursor(process.stdout, 0, -1);
-            sendMessage(input);
-         });
-      } else {
-         Sentry.captureException(kafka.initialiseFailed);
-         console.error(kafka.initialiseFailed);
-      }
-   });
+   // rl.question('', async function (username) {
+   //    const sendMessage = await Producer.getConnection(username);
+   //    if (sendMessage) {
+   //       rl.on('line', (input) => {
+   //          readline.moveCursor(process.stdout, 0, -1);
+   //          sendMessage(input);
+   //       });
+   //    } else {
+   //       Sentry.captureException(kafka.initialiseFailed);
+   //       console.error(kafka.initialiseFailed);
+   //    }
+   // });
 }
 start();
 process.on(kafka.sigint, async () => {
    try {
       await Producer.disconnect();
       await Consumer.disconnect();
-      rl.close();
+      // rl.close();
    } catch (err) {
       Sentry.captureException(err);
       console.error(kafka.cleanupError, err);
