@@ -47,6 +47,7 @@ const mongoDb = {
 const kafka = {
    syncService: 'sync-service',
    closeEvent: 'closeEvent',
+   closeBid: 'closeBid',
    getResults: 'getResults',
    eventResult: 'eventResult',
    initialiseFailed: 'Failed to initialize redpanda',
@@ -62,6 +63,8 @@ const chain = {
    executed: 'Executed',
    log: 'Log',
    eventInfo: 'event_info',
+   newEventExpTime: 'new_event_expiration_time_info',
+   newBetClosureTime: 'new_bet_closure_time_info',
    responseInfo: 'response_info',
    resultEvent: 'event_result_info',
    withdrawInfo: 'withdraw_info',

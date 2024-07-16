@@ -19,6 +19,7 @@ interface EventData {
    createdAt: Date;
    updatedAt: Date;
    eventResultTime?: string;
+   settlement?: string;
    __v: number;
 }
 

@@ -28,13 +28,15 @@ const saveEvent = async (item: any, txnHash: string) => {
          resolver: 'resolver123',
          status: 1,
          eventExpireTime: timeStampToString(
-            Number(item[0]?.events[3]?.value * 1000) + 60
+            Number(item[0]?.events[3]?.value * 1000)
+         ),
+         betExpireTime: timeStampToString(
+            Number(item[0]?.events[4]?.value * 1000)
          ),
       };
       const event = new Events(data);
       const resultData = await event.save();
       console.log('resultData : ', resultData);
-
       return resultData;
    } catch (error: any) {
       Sentry.captureException(error);

@@ -17,6 +17,8 @@ import claimReward from '../helpers/claim.helper';
 import updateOrder from '../helpers/result.helper';
 let web3 = new Web3(process.env.SOCKET_HOST);
 import * as Sentry from '@sentry/node';
+import saveUpdateExpTime from '../helpers/updateExpireTime.helper';
+import updateBetClosureTime from '../helpers/saveUpdateBetClosure.helper';
 
 class Worker {
    public connection: any;
@@ -87,6 +89,12 @@ class Worker {
                               case chain.claimedRewardInfo:
                                  claimReward(item);
                                  break;
+                              case chain.newEventExpTime:
+                                 saveUpdateExpTime(item);
+                                 break;
+                              case chain.newBetClosureTime:
+                                 updateBetClosureTime(item);
+                                 break;
                               default:
                                  // Handle default case if needed
                                  break;
@@ -109,35 +117,33 @@ class Worker {
 
    async PriceUpdate() {
       cron.schedule('*/30 * * * * *', async () => {
-         try {
-            const options = {
-               method: 'GET',
-               url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
-               headers: {
-                  Accept: 'application/json',
-                  'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
-               },
-               params: {
-                  symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
-                  convert: 'USD',
-               },
-            };
-            const prices = await axios.request(options);
-            Object.entries(prices.data.data).forEach(
-               async ([key, value]: [string, any]) => {
-                  await Currency.findOneAndUpdate(
-                     { symbol: key },
-                     { price: value?.quote?.USD?.price }
-                  );
-               }
-            );
-
-            console.log('Price Updated');
-         } catch (error) {
-            Sentry.captureException(error);
-
-            console.error(error);
-         }
+         // try {
+         //    const options = {
+         //       method: 'GET',
+         //       url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
+         //       headers: {
+         //          Accept: 'application/json',
+         //          'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
+         //       },
+         //       params: {
+         //          symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
+         //          convert: 'USD',
+         //       },
+         //    };
+         //    const prices = await axios.request(options);
+         //    Object.entries(prices.data.data).forEach(
+         //       async ([key, value]: [string, any]) => {
+         //          await Currency.findOneAndUpdate(
+         //             { symbol: key },
+         //             { price: value?.quote?.USD?.price }
+         //          );
+         //       }
+         //    );
+         //    console.log('Price Updated');
+         // } catch (error) {
+         //    Sentry.captureException(error);
+         //    console.error(error);
+         // }
       });
    }
 
@@ -145,16 +151,27 @@ class Worker {
       cron.schedule('*/60 * * * * *', async () => {
          try {
             const closeEvent = await Producer.getConnection(kafka.closeEvent);
+            const closeBid = await Producer.getConnection(kafka.closeBid);
             const getResults = await Producer.getConnection(kafka.getResults);
             const currentTimeStamp = +new Date();
-            const data = await Events.find({
+            const eventExpire = await Events.find({
                eventExpireTime: timeStampToString(currentTimeStamp),
             });
 
-            data.forEach((item) => {
-               closeEvent(String(item._id));
-               getResults(String(item.eventId));
+            eventExpire &&
+               eventExpire.forEach((item) => {
+                  closeEvent(String(item._id));
+                  getResults(String(item.eventId));
+               });
+
+            const bidExpire = await Events.find({
+               betExpireTime: timeStampToString(currentTimeStamp),
             });
+
+            bidExpire &&
+               bidExpire.forEach((item) => {
+                  closeBid(String(item.eventId));
+               });
          } catch (error) {
             Sentry.captureException(error);
 

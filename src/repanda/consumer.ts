@@ -8,6 +8,7 @@ import { EventData } from '../interfaces/consumer.interfaces';
 import Currency from '../models/Currency/index';
 import resultCall from '../helpers/consumer.helper';
 import { errorLog, kafka, orderTypes } from '../utils/constant.util';
+import Order from '../models/Order';
 
 const redpanda = new Kafka({
    brokers: [process.env.KAFKA_URL],
@@ -38,14 +39,36 @@ export async function connect() {
                      const time: number | string = timeStampToString(
                         Number(+event?.targetDateTime + 60) * 1000
                      );
+                     const currencyData = await Currency.findOne({
+                        symbol: event.currencyType,
+                     });
+
+                     let result: string = orderTypes.yes;
+
+                     currencyData.price > event.priceLevel
+                        ? (result = orderTypes.no)
+                        : (result = orderTypes.yes);
+
                      const data: EventData = await Events.findOneAndUpdate(
                         {
                            eventId: formattedValue.message,
                         },
                         {
                            eventResultTime: time,
+                           settlement: result,
                         }
                      );
+                  } catch (error) {
+                     Sentry.captureException(error);
+                  }
+                  break;
+               case kafka.closeBid:
+                  try {
+                     await Events.updateOne(
+                        { eventId: formattedValue.message },
+                        { status: 3 }
+                     );
+                     console.log('event updated !', formattedValue.message);
                   } catch (error) {
                      Sentry.captureException(error);
                   }
@@ -55,15 +78,20 @@ export async function connect() {
                      const event: EventData = await Events.findOne({
                         eventId: formattedValue.message,
                      });
-                     const currencyData = await Currency.findOne({
-                        symbol: event.currencyType,
-                     });
-                     let result: string = orderTypes.yes;
-                     currencyData.price > event.priceLevel
-                        ? (result = orderTypes.no)
-                        : (result = orderTypes.yes);
+                     await Order.updateMany(
+                        { eventId: formattedValue.message },
+                        { settlement: event.settlement }
+                     );
 
-                     const data = await resultCall(event.eventId, result);
+                     const data = await resultCall(
+                        event.eventId,
+                        event.settlement
+                     );
+                     console.log(
+                        'the result ',
+                        event.eventId,
+                        event.settlement
+                     );
                   } catch (error) {
                      Sentry.captureException(error);
 
