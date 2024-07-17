@@ -13,6 +13,7 @@ export interface IOrder extends Document {
    currentBet: number;
    result: number;
    settlement: string;
+   amountClaimed: number;
 }
 
 const orderSchema: Schema<IOrder> = new Schema(
@@ -25,8 +26,9 @@ const orderSchema: Schema<IOrder> = new Schema(
       userId: { type: String },
       fees: { type: Number },
       txnId: { type: String },
-      result: { type: Number, default: 0 },
+      result: { type: Number },
       settlement: { type: String },
+      amountClaimed: { type: Number },
    },
 
    {

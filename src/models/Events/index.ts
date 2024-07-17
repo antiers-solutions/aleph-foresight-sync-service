@@ -21,6 +21,7 @@ export interface IEvents extends Document {
    eventExpireTime: string;
    betExpireTime: string;
    eventResultTime: string;
+   disputeCloserTime: string;
    reward: number;
    settlement: string;
 }
@@ -45,6 +46,7 @@ const eventsSchema: Schema<IEvents> = new Schema(
       eventExpireTime: { type: String },
       betExpireTime: { type: String },
       eventResultTime: { type: String },
+      disputeCloserTime: { type: String },
       reward: { type: Number, default: 0 },
       settlement: { type: String },
    },

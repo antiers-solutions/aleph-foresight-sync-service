@@ -31,6 +31,12 @@ export async function connect() {
                      { status: 0 }
                   );
                   break;
+               case kafka.disputeClose:
+                  await Events.findOneAndUpdate(
+                     { eventId: formattedValue.message },
+                     { status: 4 }
+                  );
+                  break;
                case kafka.getResults:
                   try {
                      const event: EventData = await Events.findOne({
@@ -39,6 +45,10 @@ export async function connect() {
                      const time: number | string = timeStampToString(
                         Number(+event?.targetDateTime + 60) * 1000
                      );
+                     const timeCloserDispute: number | string =
+                        timeStampToString(
+                           Number(+event?.targetDateTime + 180) * 1000
+                        );
                      const currencyData = await Currency.findOne({
                         symbol: event.currencyType,
                      });
@@ -55,6 +65,7 @@ export async function connect() {
                         },
                         {
                            eventResultTime: time,
+                           disputeCloserTime: timeCloserDispute,
                            settlement: result,
                         }
                      );

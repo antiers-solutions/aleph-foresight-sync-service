@@ -55,6 +55,7 @@ const kafka = {
    close: 'Closing app...',
    cleanupError: 'Error during cleanup: ',
    cleanupFinish: 'Cleanup finished. Exiting',
+   disputeClose: 'disputeClose',
 };
 
 const chain = {

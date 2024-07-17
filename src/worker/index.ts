@@ -24,7 +24,7 @@ class Worker {
    public connection: any;
 
    async Native() {
-      cron.schedule('*/6 * * * * *', async () => {
+      cron.schedule('*/4 * * * * *', async () => {
          try {
             const blockNumber = await web3.eth.getBlockNumber();
 
@@ -183,13 +183,24 @@ class Worker {
       cron.schedule('*/60 * * * * *', async () => {
          try {
             const eventResult = await Producer.getConnection(kafka.eventResult);
+            const disputeClose = await Producer.getConnection(
+               kafka.disputeClose
+            );
             const currentTimeStamp = +new Date();
 
-            const data = await Events.find({
+            const eventResultData = await Events.find({
                eventResultTime: timeStampToString(currentTimeStamp),
             });
 
-            data.forEach((item) => {
+            const disputeCloseEvent = await Events.find({
+               disputeCloserTime: timeStampToString(currentTimeStamp),
+            });
+
+            disputeCloseEvent.forEach((item) => {
+               disputeClose(String(item.eventId));
+            });
+
+            eventResultData.forEach((item) => {
                eventResult(String(item.eventId));
             });
          } catch (error) {

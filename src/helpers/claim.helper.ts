@@ -6,13 +6,14 @@ import Events from '../models/Events/index';
 const claimReward = async (item: any) => {
    const userAddress = item[0]?.events[1]?.value;
    const eventId = item[0]?.events[0]?.value;
+   const amountClaimed = item[0]?.events[2]?.value;
    const reward = item[0]?.events[3]?.value;
    const result = item[0]?.events[4]?.value == 'Yes' ? 'true' : 'false';
 
    try {
       await Order.updateMany(
          { eventId, userId: userAddress, bidType: result },
-         { bidType: 'claimed' }
+         { bidType: 'claimed', amountClaimed }
       );
       await Events.updateOne({ eventId }, { $inc: { reward: reward } });
    } catch (error) {

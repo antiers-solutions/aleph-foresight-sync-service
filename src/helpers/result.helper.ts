@@ -4,10 +4,16 @@ import * as Sentry from '@sentry/node';
 
 const updateOrder = async (item: any) => {
    const eventId = item[0]?.events[0]?.value;
-   const bidType =
-      item[0]?.events[1]?.value == orderTypes.yes ? 'true' : 'false';
+   const bidType = item[0]?.events[1]?.value == orderTypes.yes ? true : false;
    try {
-      await Order.updateMany({ eventId, bidType }, { result: 1 });
+      await Order.updateMany(
+         { eventId, bidType: String(bidType) },
+         { result: 1 }
+      );
+      await Order.updateMany(
+         { eventId, bidType: String(!bidType) },
+         { result: 0 }
+      );
    } catch (error) {
       Sentry.captureException(error);
       errorLog(error);
