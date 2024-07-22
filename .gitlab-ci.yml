@@ -48,13 +48,14 @@ update_value_yml:
   variables:
     GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
   before_script:
-    - apt-get update && apt-get install -y git openssh-client perl
+    - apt-get update && apt-get install -y git openssh-client curl
+    - curl -sSLo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_amd64 && chmod +x /usr/local/bin/yq
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
     - echo "Updating deployment.yaml with new image tag"
-    - perl -i -pe "s|image: .*|image: ${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}|" deployment.yaml
+    - yq eval ".spec.template.spec.containers[0].image = \"${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}\"" -i deployment.yaml
     - git config user.name "gitlab"
     - git config user.email "gitlab@gitlab.com"
     - git add deployment.yaml
