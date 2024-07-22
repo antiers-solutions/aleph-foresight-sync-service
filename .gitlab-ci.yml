@@ -6,7 +6,7 @@ stages:
 variables:
   AWS_REGION: "us-west-2"
   ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-sync-aleph-foresight"
-  REPO_URL: "http://repo.antiersolutions.com/jogesh/aleph-foresight-k8-deployments.git"
+  REPO_URL: "git@repo.antiersolutions.com:jogesh/aleph-foresight-k8-deployments.git"
   TARGET_BRANCH: "stage"
 
 build:
