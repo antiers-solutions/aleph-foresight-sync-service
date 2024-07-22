@@ -48,13 +48,14 @@ update_value_yml:
   variables:
     GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
   before_script:
-    - apt-get update && apt-get install -y git openssh-client sed
+    - apt-get update && apt-get install -y git openssh-client awk
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
     - echo "Updating deployment.yaml with new image tag"
-    - sed -i "s|image: .*|image: ${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}|g" deployment.yaml
+    - awk -v img="$ECR_REPO_URL:$CI_COMMIT_SHORT_SHA" \
+          '/image:/ {$0="image: " img} {print}' deployment.yaml > tmpfile && mv tmpfile deployment.yaml
     - git config user.name "gitlab"
     - git config user.email "gitlab@gitlab.com"
     - git add deployment.yaml
