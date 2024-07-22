@@ -1,25 +1,36 @@
-stages:
-  - build
+image: docker:latest
+
+services:
+  - docker:dind
 
 variables:
-  AWS_REGION: "us-west-2"
-  ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-sync-aleph-foresight"
+  DOCKER_DRIVER: overlay2
+  AWS_DEFAULT_REGION: us-west-2
+  ECR_REGISTRY: 381492168839.dkr.ecr.us-west-2.amazonaws.com
+  ECR_REPOSITORY: stage-explorer-sync-aleph-foresight
+  IMAGE_TAG: $CI_COMMIT_SHA
 
-build:
+before_script:
+  - apt-get update
+  - apt-get install -y python3-pip
+  - pip3 install awscli
+  - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
+  - echo "Logged into ECR"
+
+stages:
+  - build
+  - push
+
+build_image:
   stage: build
-  image: python:3.10-slim  # Use an image with Python pre-installed
-  services:
-    - docker:19.03.12-dind
-  before_script:
-    - apt-get update && apt-get install -y bash git openssh-client  # Install necessary packages
-    - pip install awscli
-    - aws --version
-    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL
-    - docker --version
-    - docker info
   script:
-    - echo "Building Docker image..."
-    - docker build -t $ECR_REPO_URL:$CI_COMMIT_SHORT_SHA .
-    - docker push $ECR_REPO_URL:$CI_COMMIT_SHORT_SHA
+    - docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+  only:
+    - feature/pipeline
+
+push_image:
+  stage: push
+  script:
+    - docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
   only:
     - feature/pipeline
