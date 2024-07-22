@@ -11,9 +11,6 @@ variables:
   IMAGE_TAG: $CI_COMMIT_SHA
 
 before_script:
-  - apt-get update
-  - apt-get install -y python3-pip
-  - pip3 install awscli
   - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
   - echo "Logged into ECR"
 
