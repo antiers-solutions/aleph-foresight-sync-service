@@ -1,16 +1,23 @@
 stages:
   - build
+  - clone
+  - update
 
 variables:
   AWS_REGION: "us-west-2"
   ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-sync-aleph-foresight"
+  REPO_URL: "http://repo.antiersolutions.com/jogesh/aleph-foresight-k8-deployments.git"
+  TARGET_BRANCH: "stage"
 
 build:
   stage: build
-  image: python:3.10-slim  # Use an image with Python pre-installed
+  image: python:3.10-slim
   services:
     - docker:19.03.12-dind
   before_script:
+    - apt-get update && apt-get install -y bash git openssh-client
+    - pip install awscli
+    - aws --version
     - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL
     - docker --version
     - docker info
@@ -18,5 +25,43 @@ build:
     - echo "Building Docker image..."
     - docker build -t $ECR_REPO_URL:$CI_COMMIT_SHORT_SHA .
     - docker push $ECR_REPO_URL:$CI_COMMIT_SHORT_SHA
+  only:
+    - feature/pipeline
+
+clone_project:
+  stage: clone
+  image: python:3.10-slim
+  variables:
+    GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+  before_script:
+    - apt-get update && apt-get install -y git openssh-client
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - echo "Cloning deployment repository..."
+    - git clone -b $TARGET_BRANCH $REPO_URL
+    - cd aleph-foresight-k8-deployments/explorer/sync
+  only:
+    - feature/pipeline
+
+update_value_yml:
+  stage: update
+  image: python:3.10-slim
+  variables:
+    GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
+  before_script:
+    - apt-get update && apt-get install -y git openssh-client sed
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - echo "Updating deployment.yaml with new image tag"
+    - sed -i "s|image: .*|image: ${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}|g" deployment.yaml
+    - git config user.name "gitlab"
+    - git config user.email "gitlab@gitlab.com"
+    - git add deployment.yaml
+    - git commit -m "Update deployment.yaml with new image tag"
+    - git push origin $TARGET_BRANCH
   only:
     - feature/pipeline
