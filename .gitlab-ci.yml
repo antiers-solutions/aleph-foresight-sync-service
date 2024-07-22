@@ -48,14 +48,26 @@ update_value_yml:
   variables:
     GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
   before_script:
-    - apt-get update && apt-get install -y git openssh-client awk
+    - apt-get update && apt-get install -y git openssh-client python3
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
   script:
     - echo "Updating deployment.yaml with new image tag"
-    - awk -v img="$ECR_REPO_URL:$CI_COMMIT_SHORT_SHA" \
-          '/image:/ {$0="image: " img} {print}' deployment.yaml > tmpfile && mv tmpfile deployment.yaml
+    - python3 -c "
+import fileinput
+import re
+
+ecr_repo_url = '${ECR_REPO_URL}'
+commit_sha = '${CI_COMMIT_SHORT_SHA}'
+
+with fileinput.FileInput('deployment.yaml', inplace=True, backup='.bak') as file:
+    for line in file:
+        if line.startswith('image:'):
+            print(f'image: {ecr_repo_url}:{commit_sha}')
+        else:
+            print(line, end='')
+    "
     - git config user.name "gitlab"
     - git config user.email "gitlab@gitlab.com"
     - git add deployment.yaml
