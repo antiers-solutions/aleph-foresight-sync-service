@@ -15,9 +15,6 @@ build:
   services:
     - docker:19.03.12-dind
   before_script:
-    - apt-get update && apt-get install -y bash git openssh-client
-    - pip install awscli
-    - aws --version
     - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL
     - docker --version
     - docker info
