@@ -45,23 +45,3 @@ clone_project:
   only:
     - feature/pipeline
 
-update_value_yml:
-  stage: update
-  image: python:3.10-slim
-  variables:
-    GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
-  before_script:
-    - apt-get update && apt-get install -y git openssh-client sed
-    - mkdir -p ~/.ssh
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-  script:
-    - echo "Updating deployment.yaml with new image tag"
-    - sed -i "s|image: .*|image: ${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}|g" deployment.yaml
-    - git config user.name "gitlab"
-    - git config user.email "gitlab@gitlab.com"
-    - git add deployment.yaml
-    - git commit -m "Update deployment.yaml with new image tag"
-    - git push origin $TARGET_BRANCH
-  only:
-    - feature/pipeline
