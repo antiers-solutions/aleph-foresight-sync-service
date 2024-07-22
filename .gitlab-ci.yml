@@ -1,5 +1,5 @@
-image: docker:latest       
-                             
+image: docker:latest
+
 services:
   - docker:dind
 
@@ -11,7 +11,7 @@ variables:
   IMAGE_TAG: $CI_COMMIT_SHA
 
 before_script:
-  - $(aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY)
+  - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
   - echo "Logged into ECR"
 
 stages:
