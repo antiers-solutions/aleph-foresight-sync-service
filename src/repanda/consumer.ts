@@ -6,7 +6,7 @@ import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
 import { EventData } from '../interfaces/consumer.interfaces';
 import Currency from '../models/Currency/index';
-import resultCall from '../helpers/consumer.helper';
+import { resultCall, getEventResult } from '../helpers/consumer.helper';
 import { errorLog, kafka, orderTypes } from '../utils/constant.util';
 import Order from '../models/Order';
 
@@ -23,14 +23,20 @@ export async function connect() {
             const formattedValue = JSON.parse(
                (message.value as Buffer).toString()
             );
-
             switch (formattedValue.user) {
-               case kafka.closeEvent:
-                  await Events.findOneAndUpdate(
-                     { _id: formattedValue.message },
-                     { status: 0 }
-                  );
+               case kafka.closeEvent: {
+                  const eventData = await Events.findOne({
+                     _id: formattedValue.message,
+                  });
+                  const eventResult = await getEventResult(eventData?.eventId);
+                  if (eventResult[0] != '0' && eventResult[1] != '0') {
+                     await Events.findOneAndUpdate(
+                        { _id: formattedValue.message },
+                        { status: 0 }
+                     );
+                  }
                   break;
+               }
                case kafka.disputeClose:
                   await Events.findOneAndUpdate(
                      { eventId: formattedValue.message },
@@ -58,17 +64,19 @@ export async function connect() {
                      currencyData.price > event.priceLevel
                         ? (result = orderTypes.no)
                         : (result = orderTypes.yes);
-
-                     const data: EventData = await Events.findOneAndUpdate(
-                        {
-                           eventId: formattedValue.message,
-                        },
-                        {
-                           eventResultTime: time,
-                           disputeCloserTime: timeCloserDispute,
-                           settlement: result,
-                        }
-                     );
+                     const eventResult = await getEventResult(event?.eventId);
+                     if (eventResult[0] != '0' && eventResult[1] != '0') {
+                        await Events.findOneAndUpdate(
+                           {
+                              eventId: formattedValue.message,
+                           },
+                           {
+                              eventResultTime: time,
+                              disputeCloserTime: timeCloserDispute,
+                              settlement: result,
+                           }
+                        );
+                     }
                   } catch (error) {
                      Sentry.captureException(error);
                   }

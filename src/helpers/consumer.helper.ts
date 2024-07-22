@@ -60,5 +60,22 @@ const resultCall = async (eventId: string, resultType: string) => {
       return false;
    }
 };
+const getEventResult = async (eventId: string) => {
+   try {
+      const web3 = new Web3(process.env.SOCKET_HOST);
+      const contract = new web3.eth.Contract(ContractAbi, contractAddress);
+      const adminAddress = await contract.methods
+         .read_pool_amount_event(eventId.trim())
+         .call();
+      return adminAddress;
+   } catch (error) {
+      Sentry.captureException(error);
+      errorLog(error);
+      return false;
+   }
+};
 
-export default resultCall;
+// const event = getEventResult('QmV6XZzFBaMNx6v7Zc8iQSHbtXUXzRmqLeAG143U528npP');
+// console.log('event ====>>>',event);
+
+export { resultCall, getEventResult };
