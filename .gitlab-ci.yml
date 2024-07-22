@@ -7,12 +7,11 @@ variables:
 
 build:
   stage: build
-  image: python:3.10  # Use an image with Python pre-installed
+  image: python:3.10-slim  # Use an image with Python pre-installed
   services:
     - docker:19.03.12-dind
   before_script:
-    - apt-get update
-    - apt-get install -y bash git openssh-client
+    - apt-get update && apt-get install -y bash git openssh-client  # Install necessary packages
     - pip install awscli
     - aws --version
     - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO_URL
