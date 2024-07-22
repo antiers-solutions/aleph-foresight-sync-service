@@ -41,3 +41,20 @@ clone_project:
     - cd aleph-foresight-k8-deployments/explorer/sync
   only:
     - feature/pipeline
+update_value_yml:
+  stage: update
+  image: ghcr.io/mikefarah/yq:4.17.2  # Use yq pre-built image
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+  script:
+    - echo "Updating deployment.yaml with new image tag"
+    - yq eval ".spec.template.spec.containers[0].image = \"${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}\"" -i deployment.yaml
+    - git config user.name "gitlab"
+    - git config user.email "gitlab@gitlab.com"
+    - git add deployment.yaml
+    - git commit -m "Update deployment.yaml with new image tag"
+    - git push origin $TARGET_BRANCH
+  only:
+    - feature/pipeline
