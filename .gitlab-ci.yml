@@ -1,6 +1,5 @@
 stages:
   - build
-  - clone
   - update
 
 variables:
@@ -25,8 +24,8 @@ build:
   only:
     - feature/pipeline
 
-clone_project:
-  stage: clone
+update_deployment:
+  stage: update
   image: python:3.10-slim
   variables:
     GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
@@ -35,19 +34,11 @@ clone_project:
     - mkdir -p ~/.ssh
     - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
+    - curl -sSLo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_amd64
+    - chmod +x /usr/local/bin/yq
   script:
     - echo "Cloning deployment repository..."
     - git clone -b $TARGET_BRANCH $REPO_URL
-    - cd aleph-foresight-k8-deployments
-    - echo "Listing directory contents..."
-    - ls -R
-  only:
-    - feature/pipeline
-
-update_deployment:
-  stage: update
-  image: python:3.10-slim
-  script:
     - cd aleph-foresight-k8-deployments/explorer/sync
     - echo "Updating deployment.yaml with new image tag..."
     - yq eval ".spec.template.spec.containers[0].image = \"${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}\"" -i deployment.yaml
@@ -58,3 +49,4 @@ update_deployment:
     - git push origin $TARGET_BRANCH
   only:
     - feature/pipeline
+
