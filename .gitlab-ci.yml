@@ -8,6 +8,8 @@ variables:
   ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-sync-aleph-foresight"
   REPO_URL: "git@repo.antiersolutions.com:jogesh/aleph-foresight-k8-deployments.git"
   TARGET_BRANCH: "stage"
+  REGISTRY: "381492168839.dkr.ecr.us-west-2.amazonaws.com"
+  ECR_REPOSITORY: "stage-explorer-sync-aleph-foresight"
 
 build:
   stage: build
@@ -28,10 +30,6 @@ build:
 clone_project:
   stage: clone
   image: python:3.10-slim
-  variables:
-    REGISTRY: "381492168839.dkr.ecr.us-west-2.amazonaws.com"
-    ECR_REPOSITORY: "stage-explorer-sync-aleph-foresight"
-    TARGET_BRANCH: "stage"
   before_script:
     - apt-get update && apt-get install -y git openssh-client curl
     - mkdir -p ~/.ssh
@@ -43,6 +41,6 @@ clone_project:
     - git clone -b $TARGET_BRANCH $REPO_URL
     - cd aleph-foresight-k8-deployments/explorer/sync
     - echo "Updating deployment.yaml with new image tag"
-    - sed -i "s|image:.*|image: ${REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}|" deployment.yaml
+    - sed -i "s|image:.*|image: ${REGISTRY}/${ECR_REPOSITORY}:${CI_COMMIT_SHORT_SHA}|" deployment.yaml
   only:
     - feature/pipeline
