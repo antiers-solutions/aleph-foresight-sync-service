@@ -6,12 +6,12 @@ stages:
 variables:
   AWS_REGION: "us-west-2"
   ECR_REPO_URL: "381492168839.dkr.ecr.us-west-2.amazonaws.com/stage-explorer-sync-aleph-foresight"
-  REPO_URL: "http://repo.antiersolutions.com/jogesh/aleph-foresight-k8-deployments.git"
+  REPO_URL: "git@repo.antiersolutions.com:jogesh/aleph-foresight-k8-deployments.git"
   TARGET_BRANCH: "stage"
 
 build:
   stage: build
-  image: docker:19.03.12
+  image: python:3.10-slim
   services:
     - docker:19.03.12-dind
   before_script:
@@ -28,6 +28,8 @@ build:
 clone_project:
   stage: clone
   image: python:3.10-slim
+  variables:
+    GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=no"
   before_script:
     - apt-get update && apt-get install -y git openssh-client
     - mkdir -p ~/.ssh
@@ -37,4 +39,6 @@ clone_project:
     - echo "Cloning deployment repository..."
     - git clone -b $TARGET_BRANCH $REPO_URL
     - cd aleph-foresight-k8-deployments/explorer/sync
+  only:
+    - feature/pipeline
 
