@@ -47,9 +47,6 @@ clone_project:
 update_deployment:
   stage: update
   image: python:3.10-slim
-  before_script:
-    - curl -sSLo /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.17.2/yq_linux_amd64
-    - chmod +x /usr/local/bin/yq
   script:
     - cd aleph-foresight-k8-deployments/explorer/sync
     - echo "Updating deployment.yaml with new image tag..."
