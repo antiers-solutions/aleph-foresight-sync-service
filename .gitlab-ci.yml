@@ -42,3 +42,16 @@ clone_project:
   only:
     - feature/pipeline
 
+update_deployment:
+  stage: update
+  image: python:3.10-slim
+  script:
+    - cd aleph-foresight-k8-deployments/explorer/sync
+    - yq eval ".spec.template.spec.containers[0].image = \"${ECR_REPO_URL}:${CI_COMMIT_SHORT_SHA}\"" -i deployment.yaml
+    - git config --global user.email "your-email@example.com"
+    - git config --global user.name "Your Name"
+    - git add deployment.yaml
+    - git commit -m "Updated image tag to ${CI_COMMIT_SHORT_SHA}"
+    - git push origin $TARGET_BRANCH
+  only:
+    - feature/pipeline
