@@ -43,5 +43,5 @@ update_deployment:
     - git commit -m "Updated image tag to ${CI_COMMIT_SHORT_SHA}"
     - git push origin $TARGET_BRANCH
   only:
-    - feature/pipeline
+    - stage
 
