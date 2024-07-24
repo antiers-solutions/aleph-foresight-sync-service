@@ -24,19 +24,12 @@ export async function connect() {
                (message.value as Buffer).toString()
             );
             switch (formattedValue.user) {
-               case kafka.closeEvent: {
-                  const eventData = await Events.findOne({
-                     _id: formattedValue.message,
-                  });
-                  const eventResult = await getEventResult(eventData?.eventId);
-                  if (eventResult[0] != '0' && eventResult[1] != '0') {
-                     await Events.findOneAndUpdate(
-                        { _id: formattedValue.message },
-                        { status: 0 }
-                     );
-                  }
+               case kafka.closeEvent:
+                  await Events.findOneAndUpdate(
+                     { _id: formattedValue.message },
+                     { status: 0 }
+                  );
                   break;
-               }
                case kafka.disputeClose:
                   await Events.findOneAndUpdate(
                      { eventId: formattedValue.message },
@@ -83,11 +76,17 @@ export async function connect() {
                   break;
                case kafka.closeBid:
                   try {
-                     await Events.updateOne(
-                        { eventId: formattedValue.message },
-                        { status: 3 }
-                     );
-                     console.log('event updated !', formattedValue.message);
+                     const event: EventData = await Events.findOne({
+                        eventId: formattedValue.message,
+                     });
+                     const eventResult = await getEventResult(event?.eventId);
+                     if (eventResult[0] != '0' && eventResult[1] != '0') {
+                        await Events.updateOne(
+                           { eventId: formattedValue.message },
+                           { status: 3 }
+                        );
+                        console.log('event updated !', formattedValue.message);
+                     }
                   } catch (error) {
                      Sentry.captureException(error);
                   }
@@ -97,20 +96,23 @@ export async function connect() {
                      const event: EventData = await Events.findOne({
                         eventId: formattedValue.message,
                      });
-                     await Order.updateMany(
-                        { eventId: formattedValue.message },
-                        { settlement: event.settlement }
-                     );
+                     const eventResult = await getEventResult(event?.eventId);
+                     if (eventResult[0] != '0' && eventResult[1] != '0') {
+                        await Order.updateMany(
+                           { eventId: formattedValue.message },
+                           { settlement: event.settlement }
+                        );
 
-                     const data = await resultCall(
-                        event.eventId,
-                        event.settlement
-                     );
-                     console.log(
-                        'the result ',
-                        event.eventId,
-                        event.settlement
-                     );
+                        const data = await resultCall(
+                           event.eventId,
+                           event.settlement
+                        );
+                        console.log(
+                           'the result ',
+                           event.eventId,
+                           event.settlement
+                        );
+                     }
                   } catch (error) {
                      Sentry.captureException(error);
 
