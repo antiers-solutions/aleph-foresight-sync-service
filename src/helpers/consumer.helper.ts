@@ -75,7 +75,4 @@ const getEventResult = async (eventId: string) => {
    }
 };
 
-// const event = getEventResult('QmV6XZzFBaMNx6v7Zc8iQSHbtXUXzRmqLeAG143U528npP');
-// console.log('event ====>>>',event);
-
 export { resultCall, getEventResult };

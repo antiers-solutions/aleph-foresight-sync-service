@@ -52,7 +52,6 @@ class Worker {
                      index <= blockNumber;
                      index++
                   ) {
-                     console.log('block saved ', index);
                      const blockByNumber = await web3.eth.getBlock(index);
                      const currentBlock = new Block({
                         hash: blockByNumber.hash,
@@ -72,32 +71,36 @@ class Worker {
                            const item = abidecoder.decodeLogs(
                               transactionReceipt?.logs
                            );
-
-                           switch (item[0]?.name) {
-                              case chain.eventInfo:
-                                 saveEvent(item, transactionHash);
-                                 break;
-                              case chain.responseInfo:
-                                 saveOrder(item, transactionHash);
-                                 break;
-                              case chain.resultEvent:
-                                 updateOrder(item);
-                                 break;
-                              case chain.withdrawInfo:
-                                 updateWithdraw(item);
-                                 break;
-                              case chain.claimedRewardInfo:
-                                 claimReward(item);
-                                 break;
-                              case chain.newEventExpTime:
-                                 saveUpdateExpTime(item);
-                                 break;
-                              case chain.newBetClosureTime:
-                                 updateBetClosureTime(item);
-                                 break;
-                              default:
-                                 // Handle default case if needed
-                                 break;
+                           if (
+                              item[0]?.address?.toLowerCase() ==
+                              process.env.CONTRACT_ADDRESS.toLowerCase()
+                           ) {
+                              switch (item[0]?.name) {
+                                 case chain.eventInfo:
+                                    saveEvent(item, transactionHash);
+                                    break;
+                                 case chain.responseInfo:
+                                    saveOrder(item, transactionHash);
+                                    break;
+                                 case chain.resultEvent:
+                                    updateOrder(item);
+                                    break;
+                                 case chain.withdrawInfo:
+                                    updateWithdraw(item);
+                                    break;
+                                 case chain.claimedRewardInfo:
+                                    claimReward(item);
+                                    break;
+                                 case chain.newEventExpTime:
+                                    saveUpdateExpTime(item);
+                                    break;
+                                 case chain.newBetClosureTime:
+                                    updateBetClosureTime(item);
+                                    break;
+                                 default:
+                                    // Handle default case if needed
+                                    break;
+                              }
                            }
                         }
                      );
@@ -116,34 +119,35 @@ class Worker {
    }
 
    async PriceUpdate() {
-      cron.schedule('*/30 * * * * *', async () => {
-         // try {
-         //    const options = {
-         //       method: 'GET',
-         //       url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
-         //       headers: {
-         //          Accept: 'application/json',
-         //          'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
-         //       },
-         //       params: {
-         //          symbol: 'BTC,ETH,BCH,BNB,PMC,SOL,TRX,AVAX',
-         //          convert: 'USD',
-         //       },
-         //    };
-         //    const prices = await axios.request(options);
-         //    Object.entries(prices.data.data).forEach(
-         //       async ([key, value]: [string, any]) => {
-         //          await Currency.findOneAndUpdate(
-         //             { symbol: key },
-         //             { price: value?.quote?.USD?.price }
-         //          );
-         //       }
-         //    );
-         //    console.log('Price Updated');
-         // } catch (error) {
-         //    Sentry.captureException(error);
-         //    console.error(error);
-         // }
+      cron.schedule('*/60 * * * * *', async () => {
+         try {
+            const crruncyData = await Currency.find();
+            const symbols = crruncyData.map((item) => item.symbol).join(',');
+            const options = {
+               method: 'GET',
+               url: process.env.COIN_MARKET_CAP_URL + priceListUrl,
+               headers: {
+                  Accept: 'application/json',
+                  'X-CMC_PRO_API_KEY': process.env.COIN_MARKET_CAP_KEY,
+               },
+               params: {
+                  symbol: symbols,
+                  convert: 'USD',
+               },
+            };
+            const prices = await axios.request(options);
+            Object.entries(prices.data.data).forEach(
+               async ([key, value]: [string, any]) => {
+                  await Currency.findOneAndUpdate(
+                     { symbol: key },
+                     { price: value?.quote?.USD?.price }
+                  );
+               }
+            );
+         } catch (error) {
+            Sentry.captureException(error);
+            console.error(error);
+         }
       });
    }
 

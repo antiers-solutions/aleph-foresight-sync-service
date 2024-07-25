@@ -107,11 +107,6 @@ export async function connect() {
                            event.eventId,
                            event.settlement
                         );
-                        console.log(
-                           'the result ',
-                           event.eventId,
-                           event.settlement
-                        );
                      }
                   } catch (error) {
                      Sentry.captureException(error);

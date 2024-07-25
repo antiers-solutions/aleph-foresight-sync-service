@@ -4,7 +4,6 @@ import timeStampToString from '../helpers/commom.helper';
 
 const updateBetClosureTime = async (item: any) => {
    try {
-      console.log('i am here');
       const result = await Events.updateOne(
          { eventId: item[0]?.events[0]?.value },
          {
@@ -14,7 +13,6 @@ const updateBetClosureTime = async (item: any) => {
             ),
          }
       );
-      console.log('resultData : ', result);
       return result;
    } catch (error: any) {
       Sentry.captureException(error);

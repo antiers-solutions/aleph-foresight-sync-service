@@ -6,8 +6,6 @@ import { resolutionSource } from '../utils/constant.util';
 
 const saveEvent = async (item: any, txnHash: string) => {
    try {
-      console.log('i am here');
-
       const fetchData = await axios.get(
          process.env.IPFSURL + item[0]?.events[0]?.value
       );
@@ -36,7 +34,6 @@ const saveEvent = async (item: any, txnHash: string) => {
       };
       const event = new Events(data);
       const resultData = await event.save();
-      console.log('resultData : ', resultData);
       return resultData;
    } catch (error: any) {
       Sentry.captureException(error);

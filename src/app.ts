@@ -6,11 +6,9 @@ import * as cron from 'node-cron';
 import { Response, Request } from 'express';
 import { Server } from 'http';
 import morganMiddleware from './config/morganMiddleware';
-import { chainInitialise } from './common/chain.common';
 import Worker from './worker/index';
 import dbConnectionHandler from '../src/mongoDB/connection';
 import SocketHelper from './helpers/socket.helper';
-import worker from './worker/index';
 import { mongoDb } from './utils/constant.util';
 declare global {
    // eslint-disable-next-line @typescript-eslint/no-namespace
