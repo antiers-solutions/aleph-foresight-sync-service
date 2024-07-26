@@ -54,7 +54,7 @@ export async function connect() {
 
                      let result: string = orderTypes.yes;
 
-                     currencyData.price > event.priceLevel
+                     currencyData.price <= event.priceLevel
                         ? (result = orderTypes.no)
                         : (result = orderTypes.yes);
                      const eventResult = await getEventResult(event?.eventId);
@@ -85,7 +85,6 @@ export async function connect() {
                            { eventId: formattedValue.message },
                            { status: 3 }
                         );
-                        console.log('event updated !', formattedValue.message);
                      }
                   } catch (error) {
                      Sentry.captureException(error);
