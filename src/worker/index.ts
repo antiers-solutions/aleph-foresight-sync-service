@@ -71,31 +71,36 @@ class Worker {
                            const item = abidecoder.decodeLogs(
                               transactionReceipt?.logs
                            );
-                           switch (item[0]?.name) {
-                              case chain.eventInfo:
-                                 saveEvent(item, transactionHash);
-                                 break;
-                              case chain.responseInfo:
-                                 saveOrder(item, transactionHash);
-                                 break;
-                              case chain.resultEvent:
-                                 updateOrder(item);
-                                 break;
-                              case chain.withdrawInfo:
-                                 updateWithdraw(item);
-                                 break;
-                              case chain.claimedRewardInfo:
-                                 claimReward(item);
-                                 break;
-                              case chain.newEventExpTime:
-                                 saveUpdateExpTime(item);
-                                 break;
-                              case chain.newBetClosureTime:
-                                 updateBetClosureTime(item);
-                                 break;
-                              default:
-                                 // Handle default case if needed
-                                 break;
+                           if (
+                              item[0]?.address?.toLowerCase() ==
+                              process.env.CONTRACT_ADDRESS.toLowerCase()
+                           ) {
+                              switch (item[0]?.name) {
+                                 case chain.eventInfo:
+                                    saveEvent(item, transactionHash);
+                                    break;
+                                 case chain.responseInfo:
+                                    saveOrder(item, transactionHash);
+                                    break;
+                                 case chain.resultEvent:
+                                    updateOrder(item);
+                                    break;
+                                 case chain.withdrawInfo:
+                                    updateWithdraw(item);
+                                    break;
+                                 case chain.claimedRewardInfo:
+                                    claimReward(item);
+                                    break;
+                                 case chain.newEventExpTime:
+                                    saveUpdateExpTime(item);
+                                    break;
+                                 case chain.newBetClosureTime:
+                                    updateBetClosureTime(item);
+                                    break;
+                                 default:
+                                    // Handle default case if needed
+                                    break;
+                              }
                            }
                         }
                      );
