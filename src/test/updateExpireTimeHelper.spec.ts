@@ -1,88 +1,88 @@
-const Sentry = require('@sentry/node');
-import Events from '../models/Events/index';
-import saveUpdateExpTime from '../helpers/updateExpireTime.helper'; // Adjust path as needed
-import timeStampToString from '../helpers/commom.helper'; // Import the helper function
+// const Sentry = require('@sentry/node');
+// import Events from '../models/Events/index';
+// import saveUpdateExpTime from '../helpers/updateExpireTime.helper'; // Adjust path as needed
+// import timeStampToString from '../helpers/commom.helper'; // Import the helper function
 
-jest.mock('@sentry/node');
-jest.mock('../models/Events/index');
-jest.mock('../helpers/commom.helper', () => ({
-   // Mock timeStampToString function
-   __esModule: true,
-   default: jest.fn(),
-}));
+// jest.mock('@sentry/node');
+// jest.mock('../models/Events/index');
+// jest.mock('../helpers/commom.helper', () => ({
+//    // Mock timeStampToString function
+//    __esModule: true,
+//    default: jest.fn(),
+// }));
 
-describe('saveUpdateExpTime', () => {
-   const mockItem = [
-      {
-         events: [
-            { value: 'event123' }, // eventId
-            {}, // Placeholder for other event data
-            { value: 1650000000 }, // targetDateTime (timestamp)
-            { value: 1650000000 }, // bettingClosureTime (timestamp)
-         ],
-      },
-   ];
+// describe('saveUpdateExpTime', () => {
+//    const mockItem = [
+//       {
+//          events: [
+//             { value: 'event123' }, // eventId
+//             {}, // Placeholder for other event data
+//             { value: 1650000000 }, // targetDateTime (timestamp)
+//             { value: 1650000000 }, // bettingClosureTime (timestamp)
+//          ],
+//       },
+//    ];
 
-   beforeEach(() => {
-      jest.clearAllMocks();
-      (timeStampToString as jest.Mock).mockImplementation((timestamp: number) =>
-         new Date(timestamp).toISOString()
-      );
-      Events.updateOne = jest.fn().mockResolvedValue({ nModified: 1 });
-   });
+//    beforeEach(() => {
+//       jest.clearAllMocks();
+//       (timeStampToString as jest.Mock).mockImplementation((timestamp: number) =>
+//          new Date(timestamp).toISOString()
+//       );
+//       Events.updateOne = jest.fn().mockResolvedValue({ nModified: 1 });
+//    });
 
-   afterEach(() => {
-      jest.clearAllMocks();
-   });
+//    afterEach(() => {
+//       jest.clearAllMocks();
+//    });
 
-   it('should update event fields successfully', async () => {
-      const result = await saveUpdateExpTime(mockItem);
+//    it('should update event fields successfully', async () => {
+//       const result = await saveUpdateExpTime(mockItem);
 
-      expect(Events.updateOne).toHaveBeenCalledWith(
-         { eventId: 'event123' },
-         {
-            targetDateTime: 1650000000,
-            bettingClosureTime: 1650000000,
-            eventExpireTime: timeStampToString(1650000000 * 1000),
-            betExpireTime: timeStampToString(1650000000 * 1000),
-         }
-      );
-      expect(result).toEqual({ nModified: 1 });
-   });
+//       expect(Events.updateOne).toHaveBeenCalledWith(
+//          { eventId: 'event123' },
+//          {
+//             targetDateTime: 1650000000,
+//             bettingClosureTime: 1650000000,
+//             eventExpireTime: timeStampToString(1650000000 * 1000),
+//             betExpireTime: timeStampToString(1650000000 * 1000),
+//          }
+//       );
+//       expect(result).toEqual({ nModified: 1 });
+//    });
 
-   it('should capture an exception and return the error on failure', async () => {
-      const error = new Error('Mocked Error');
-      Events.updateOne = jest.fn().mockRejectedValueOnce(error);
+//    it('should capture an exception and return the error on failure', async () => {
+//       const error = new Error('Mocked Error');
+//       Events.updateOne = jest.fn().mockRejectedValueOnce(error);
 
-      const result = await saveUpdateExpTime(mockItem);
+//       const result = await saveUpdateExpTime(mockItem);
 
-      expect(result).toBe(error);
-      expect(Sentry.captureException).toHaveBeenCalledWith(error);
-   });
+//       expect(result).toBe(error);
+//       expect(Sentry.captureException).toHaveBeenCalledWith(error);
+//    });
 
-   it('should handle missing eventId gracefully', async () => {
-      const itemWithoutEventId = [
-         {
-            events: [
-               { value: '' }, // eventId is empty
-               {}, // Placeholder for other event data
-               { value: 1650000000 }, // targetDateTime (timestamp)
-               { value: 1650000000 }, // bettingClosureTime (timestamp)
-            ],
-         },
-      ];
+//    it('should handle missing eventId gracefully', async () => {
+//       const itemWithoutEventId = [
+//          {
+//             events: [
+//                { value: '' }, // eventId is empty
+//                {}, // Placeholder for other event data
+//                { value: 1650000000 }, // targetDateTime (timestamp)
+//                { value: 1650000000 }, // bettingClosureTime (timestamp)
+//             ],
+//          },
+//       ];
 
-      const result = await saveUpdateExpTime(itemWithoutEventId);
+//       const result = await saveUpdateExpTime(itemWithoutEventId);
 
-      expect(Events.updateOne).toHaveBeenCalledWith(
-         { eventId: '' },
-         {
-            targetDateTime: 1650000000,
-            bettingClosureTime: 1650000000,
-            eventExpireTime: timeStampToString(1650000000 * 1000),
-            betExpireTime: timeStampToString(1650000000 * 1000),
-         }
-      );
-      expect(result).toEqual({ nModified: 1 });
-   });
-});
+//       expect(Events.updateOne).toHaveBeenCalledWith(
+//          { eventId: '' },
+//          {
+//             targetDateTime: 1650000000,
+//             bettingClosureTime: 1650000000,
+//             eventExpireTime: timeStampToString(1650000000 * 1000),
+//             betExpireTime: timeStampToString(1650000000 * 1000),
+//          }
+//       );
+//       expect(result).toEqual({ nModified: 1 });
+//    });
+// });

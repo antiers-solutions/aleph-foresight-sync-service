@@ -99,25 +99,6 @@ const ContractAbi: any = [
       inputs: [
          {
             indexed: false,
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-         {
-            indexed: false,
-            internalType: 'bool',
-            name: 'is_dispute_raised',
-            type: 'bool',
-         },
-      ],
-      name: 'dispute_raised_info',
-      type: 'event',
-   },
-   {
-      anonymous: false,
-      inputs: [
-         {
-            indexed: false,
             internalType: 'uint256',
             name: 'event_creation_fee',
             type: 'uint256',
@@ -200,31 +181,6 @@ const ContractAbi: any = [
          {
             indexed: false,
             internalType: 'uint256',
-            name: 'new_bet_closure_time',
-            type: 'uint256',
-         },
-      ],
-      name: 'new_bet_closure_time_info',
-      type: 'event',
-   },
-   {
-      anonymous: false,
-      inputs: [
-         {
-            indexed: false,
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-         {
-            indexed: false,
-            internalType: 'address',
-            name: 'user_address',
-            type: 'address',
-         },
-         {
-            indexed: false,
-            internalType: 'uint256',
             name: 'new_event_expiration_time',
             type: 'uint256',
          },
@@ -234,33 +190,14 @@ const ContractAbi: any = [
             name: 'new_bet_closure_time',
             type: 'uint256',
          },
+         {
+            indexed: false,
+            internalType: 'uint256',
+            name: 'price_level',
+            type: 'uint256',
+         },
       ],
       name: 'new_event_expiration_time_info',
-      type: 'event',
-   },
-   {
-      anonymous: false,
-      inputs: [
-         {
-            indexed: false,
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-         {
-            indexed: false,
-            internalType: 'address',
-            name: 'user_address',
-            type: 'address',
-         },
-         {
-            indexed: false,
-            internalType: 'bool',
-            name: 'has_participate',
-            type: 'bool',
-         },
-      ],
-      name: 'participant_info',
       type: 'event',
    },
    {
@@ -318,31 +255,6 @@ const ContractAbi: any = [
       inputs: [
          {
             indexed: false,
-            internalType: 'address',
-            name: 'user_address',
-            type: 'address',
-         },
-         {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'amount_staked',
-            type: 'uint256',
-         },
-         {
-            indexed: false,
-            internalType: 'uint256',
-            name: 'updated_amount_staked',
-            type: 'uint256',
-         },
-      ],
-      name: 'stake_info',
-      type: 'event',
-   },
-   {
-      anonymous: false,
-      inputs: [
-         {
-            indexed: false,
             internalType: 'string',
             name: 'event_id',
             type: 'string',
@@ -366,19 +278,6 @@ const ContractAbi: any = [
    {
       stateMutability: 'payable',
       type: 'fallback',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-      ],
-      name: 'add_participant_event',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
    },
    {
       inputs: [
@@ -444,25 +343,12 @@ const ContractAbi: any = [
          },
          {
             internalType: 'uint256',
-            name: 'new_bet_closure_time',
+            name: 'new_event_expiration_time',
             type: 'uint256',
-         },
-      ],
-      name: 'edit_bet_closure_time_event',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
          },
          {
             internalType: 'uint256',
-            name: 'new_event_expiration_time',
+            name: 'new_price_level',
             type: 'uint256',
          },
       ],
@@ -553,19 +439,6 @@ const ContractAbi: any = [
          },
       ],
       stateMutability: 'view',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'event_id',
-            type: 'string',
-         },
-      ],
-      name: 'raise_dispute_event',
-      outputs: [],
-      stateMutability: 'nonpayable',
       type: 'function',
    },
    {
@@ -738,32 +611,6 @@ const ContractAbi: any = [
          },
       ],
       name: 'set_result_event',
-      outputs: [],
-      stateMutability: 'nonpayable',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'uint256',
-            name: 'stake_amount',
-            type: 'uint256',
-         },
-      ],
-      name: 'stake',
-      outputs: [],
-      stateMutability: 'payable',
-      type: 'function',
-   },
-   {
-      inputs: [
-         {
-            internalType: 'string',
-            name: 'Aleph_Id',
-            type: 'string',
-         },
-      ],
-      name: 'update_user_profile',
       outputs: [],
       stateMutability: 'nonpayable',
       type: 'function',

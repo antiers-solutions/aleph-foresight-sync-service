@@ -24,6 +24,8 @@ module.exports = {
         "<rootDir>/src/models/Transaction/index.ts",
         "<rootDir>/src/repanda",
 
+
+
     ],
   setupFilesAfterEnv: ['<rootDir>/src/test/helper/testSetup.ts'],
 }

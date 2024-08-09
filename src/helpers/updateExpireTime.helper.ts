@@ -15,6 +15,7 @@ const saveUpdateExpTime = async (item: any) => {
             betExpireTime: timeStampToString(
                Number(item[0]?.events[3]?.value * 1000)
             ),
+            priceLevel: Number(item[0]?.events[4]?.value / 10 ** 7),
          }
       );
 
