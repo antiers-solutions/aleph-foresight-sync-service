@@ -72,30 +72,93 @@ describe('claimReward', () => {
       expect(errorLog).toHaveBeenCalledWith(expect.any(Error));
    });
 
-   // Uncomment and modify this test case as needed
-   // it('should handle case when result is "No"', async () => {
-   //   const mockItemNoResult = [
-   //     {
-   //       events: [
-   //         { value: 'event1' },
-   //         { value: 'user1' },
-   //         { value: 100 },
-   //         { value: 50 },
-   //         { value: 'No' },
-   //       ],
-   //     },
-   //   ];
+   it('should update Order and Events when result is "No"', async () => {
+      const mockItemNoResult = [
+         {
+            events: [
+               { value: 'event1' },
+               { value: 'user1' },
+               { value: 100 },
+               { value: 50 },
+               { value: 'No' },
+            ],
+         },
+      ];
 
-   //   await claimReward(mockItemNoResult);
+      (Order.updateMany as jest.Mock).mockResolvedValue({});
+      (Events.updateOne as jest.Mock).mockResolvedValue({});
 
-   //   expect(Order.updateMany).toHaveBeenCalledWith(
-   //     { eventId: 'event1', userId: 'user1', bidType: 'false' },
-   //     { bidType: 'claimed', amountClaimed: 100 }
-   //   );
+      await claimReward(mockItemNoResult);
 
-   //   expect(Events.updateOne).toHaveBeenCalledWith(
-   //     { eventId: 'event1' },
-   //     { $inc: { reward: 50 } }
-   //   );
-   // });
+      expect(Order.updateMany).toHaveBeenCalledWith(
+         { eventId: 'event1', userId: 'user1', bidType: 'false' },
+         { bidType: 'claimed', amountClaimed: 100 }
+      );
+
+      expect(Events.updateOne).toHaveBeenCalledWith(
+         { eventId: 'event1' },
+         { $inc: { reward: 50 } }
+      );
+
+      expect(Sentry.captureException).not.toHaveBeenCalled();
+      expect(errorLog).not.toHaveBeenCalled();
+   });
+
+   it('should handle missing amountClaimed or reward gracefully', async () => {
+      const mockItemMissingData = [
+         {
+            events: [
+               { value: 'event1' },
+               { value: 'user1' },
+               { value: null }, // missing amountClaimed
+               { value: null }, // missing reward
+               { value: 'Yes' },
+            ],
+         },
+      ];
+
+      await claimReward(mockItemMissingData);
+
+      expect(Order.updateMany).toHaveBeenCalledWith(
+         { eventId: 'event1', userId: 'user1', bidType: 'true' },
+         { bidType: 'claimed', amountClaimed: null }
+      );
+
+      expect(Events.updateOne).toHaveBeenCalledWith(
+         { eventId: 'event1' },
+         { $inc: { reward: null } }
+      );
+
+      expect(Sentry.captureException).not.toHaveBeenCalled();
+      expect(errorLog).not.toHaveBeenCalled();
+   });
+
+   it('should attempt updates even if eventId or userAddress is missing', async () => {
+      const mockItemNoId = [
+         {
+            events: [
+               { value: null }, // missing eventId
+               { value: null }, // missing userAddress
+               { value: 100 },
+               { value: 50 },
+               { value: 'Yes' },
+            ],
+         },
+      ];
+
+      await claimReward(mockItemNoId);
+
+      expect(Order.updateMany).toHaveBeenCalledWith(
+         { eventId: null, userId: null, bidType: 'true' },
+         { bidType: 'claimed', amountClaimed: 100 }
+      );
+
+      expect(Events.updateOne).toHaveBeenCalledWith(
+         { eventId: null },
+         { $inc: { reward: 50 } }
+      );
+
+      expect(Sentry.captureException).not.toHaveBeenCalled();
+      expect(errorLog).not.toHaveBeenCalled();
+   });
 });
