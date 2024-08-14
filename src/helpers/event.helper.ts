@@ -34,6 +34,11 @@ const saveEvent = async (item: any, txnHash: string) => {
       };
       const event = new Events(data);
       const resultData = await event.save();
+      console.info(
+         '\x1b[36m event has been saved : ',
+         String(item[0]?.events[0]?.value)
+      );
+
       return resultData;
    } catch (error: any) {
       Sentry.captureException(error);

@@ -60,7 +60,10 @@ class Worker {
                         timeStamp: blockByNumber.timeStamp,
                         gasUsed: blockByNumber.gasUsed,
                      });
-                     console.log(blockByNumber.transactions);
+                     console.info(
+                        `\x1b[36m no of transections in ${blockByNumber.number} this block`,
+                        blockByNumber?.transactions?.length
+                     );
                      blockByNumber.transactions.forEach(
                         async (transactionHash: string) => {
                            const transactionReceipt =
@@ -109,9 +112,13 @@ class Worker {
                   }
                }
 
-               console.log('currentDB : ', currentDbBlock.number);
+               console.info(
+                  '\x1b[34m current block in databse : ',
+                  currentDbBlock.number
+               );
             }
          } catch (error) {
+            web3 = new Web3(process.env.SOCKET_HOST);
             Sentry.captureException(error);
             return error;
          }
@@ -138,6 +145,10 @@ class Worker {
             const prices = await axios.request(options);
             Object.entries(prices.data.data).forEach(
                async ([key, value]: [string, any]) => {
+                  console.info(
+                     `\x1b[36m price for ${key} has been updated to  `,
+                     value?.quote?.USD?.price
+                  );
                   await Currency.findOneAndUpdate(
                      { symbol: key },
                      { price: value?.quote?.USD?.price }

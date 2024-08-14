@@ -14,6 +14,8 @@ const updateOrder = async (item: any) => {
          { eventId, bidType: String(!bidType) },
          { result: 0 }
       );
+
+      console.info('\x1b[36m orders has been updated : ', eventId, bidType);
    } catch (error) {
       Sentry.captureException(error);
       errorLog(error);

@@ -12,6 +12,11 @@ const updateWithdraw = async (item: any) => {
          { eventId, userId: userAddress },
          { bidType: 'withdraw' }
       );
+      console.info(
+         '\x1b[36m Withdraw has been updated : ',
+         eventId,
+         userAddress
+      );
    } catch (error) {
       Sentry.captureException(error);
       errorLog(error);

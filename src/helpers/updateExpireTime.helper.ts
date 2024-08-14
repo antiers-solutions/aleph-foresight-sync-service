@@ -17,6 +17,14 @@ const saveUpdateExpTime = async (item: any) => {
             ),
          }
       );
+
+      console.info(
+         '\x1b[36m ExpTime has been updated : ',
+         item[0]?.events[0]?.value,
+         timeStampToString(Number(item[0]?.events[2]?.value * 1000)),
+         timeStampToString(Number(item[0]?.events[3]?.value * 1000))
+      );
+
       return result;
    } catch (error: any) {
       Sentry.captureException(error);

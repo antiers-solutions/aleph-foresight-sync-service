@@ -97,7 +97,7 @@ const eventCreationFees = async (eventId: string) => {
       const web3 = new Web3(process.env.SOCKET_HOST);
       const contract = new web3.eth.Contract(ContractAbi, contractAddress);
       const eventOdds = await contract.methods
-         .get_platform_fee(eventId.trim())
+         .get_platform_fee_event(eventId.trim())
          .call();
       return Number(eventOdds) / 100;
    } catch (error) {

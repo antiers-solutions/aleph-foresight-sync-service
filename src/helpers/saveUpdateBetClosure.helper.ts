@@ -13,6 +13,13 @@ const updateBetClosureTime = async (item: any) => {
             ),
          }
       );
+
+      console.info(
+         '\x1b[36m BetClosureTime has been updated : ',
+         item[0]?.events[0]?.value,
+         item[0]?.events[2]?.value
+      );
+
       return result;
    } catch (error: any) {
       Sentry.captureException(error);
