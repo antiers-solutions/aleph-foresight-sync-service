@@ -84,7 +84,6 @@ To set up the project follow the instructions:
 1. Enter the env in `src/config/local.env`
    ```sh
     PORT=XXXX
-    WEB_HOST=XXXXXXXXX
     BACKEND_API_HOST=XXXXXXXX
     SOCKET_HOST = XXXXXXX 
     MAXBLOCKSIZE=XXXXXX

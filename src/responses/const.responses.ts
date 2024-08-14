@@ -42,7 +42,6 @@ exports.RES_MSG = {
    ALLBLOCKFETCH: 'Block Fetched Successfully',
    VALIDHASH: 'Please Enter a Valid Hash',
    TRASACTION: 'Transaction Fetched Successfully',
-   PEERSFETCH: 'Peers Fetched Successfully',
    VALIDATORFETCH: 'Validator Fetched Successfully',
    KEYFETCH: 'Key Fetch Successfully',
    PREIMAGESUCCESS: 'Pre Image Created Successfully',
