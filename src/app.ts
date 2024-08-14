@@ -1,8 +1,14 @@
-import * as bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 import './instrument';
+<<<<<<< HEAD
 import * as Sentry from '@sentry/node';
 import * as express from 'express';
 import * as cron from 'node-cron';
+=======
+const Sentry = require('@sentry/node');
+import express from 'express';
+import cron from 'node-cron';
+>>>>>>> 99bfc3a (test: Implement test cases)
 import { Response, Request } from 'express';
 import { Server } from 'http';
 import morganMiddleware from './config/morganMiddleware';
