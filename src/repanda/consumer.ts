@@ -6,7 +6,16 @@ import Events from '../models/Events/index';
 import timeStampToString from '../helpers/commom.helper';
 import { EventData } from '../interfaces/consumer.interfaces';
 import Currency from '../models/Currency/index';
+<<<<<<< HEAD
 import { resultCall, getEventResult } from '../helpers/consumer.helper';
+=======
+import {
+   resultCall,
+   getEventResult,
+   eventOdds,
+   eventCreationFees,
+} from '../helpers/consumer.helper';
+>>>>>>> fb9ad29 (version 0.0.3 :Update platformfee.)
 import { errorLog, kafka, orderTypes } from '../utils/constant.util';
 import Order from '../models/Order';
 
@@ -25,10 +34,26 @@ export async function connect() {
             );
             switch (formattedValue.user) {
                case kafka.closeEvent:
+<<<<<<< HEAD
                   await Events.findOneAndUpdate(
                      { _id: formattedValue.message },
                      { status: 0 }
                   );
+=======
+                  {
+                     const getEventId = await Events.findOne({
+                        _id: formattedValue.message,
+                     });
+                     const eventOdd = await eventOdds(getEventId.eventId);
+                     const eventFees = await eventCreationFees(
+                        getEventId.eventId
+                     );
+                     await Events.findOneAndUpdate(
+                        { _id: formattedValue.message },
+                        { status: 0, odds: eventOdd, platformFees: eventFees }
+                     );
+                  }
+>>>>>>> fb9ad29 (version 0.0.3 :Update platformfee.)
                   break;
                case kafka.disputeClose:
                   await Events.findOneAndUpdate(

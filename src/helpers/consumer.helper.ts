@@ -74,5 +74,37 @@ const getEventResult = async (eventId: string) => {
       return false;
    }
 };
+<<<<<<< HEAD
 
 export { resultCall, getEventResult };
+=======
+const eventOdds = async (eventId: string) => {
+   try {
+      const web3 = new Web3(process.env.SOCKET_HOST);
+      const contract = new web3.eth.Contract(ContractAbi, contractAddress);
+      const eventOdds = await contract.methods
+         .current_odds_event(eventId.trim())
+         .call();
+      return eventOdds;
+   } catch (error) {
+      Sentry.captureException(error);
+      errorLog(error);
+      return false;
+   }
+};
+const eventCreationFees = async (eventId: string) => {
+   try {
+      const web3 = new Web3(process.env.SOCKET_HOST);
+      const contract = new web3.eth.Contract(ContractAbi, contractAddress);
+      const eventOdds = await contract.methods
+         .get_platform_fee(eventId.trim())
+         .call();
+      return Number(eventOdds) / 100;
+   } catch (error) {
+      Sentry.captureException(error);
+      errorLog(error);
+      return false;
+   }
+};
+export { resultCall, getEventResult, eventOdds, eventCreationFees };
+>>>>>>> fb9ad29 (version 0.0.3 :Update platformfee.)
