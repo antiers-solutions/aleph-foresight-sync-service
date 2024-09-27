@@ -209,7 +209,7 @@ contract AlephForesight is Initializable, UUPSUpgradeable, ReentrancyGuardUpgrad
     {
         require(event_mapping[event_id].event_creator != address(0x0), "Event does not exists");
         require(block.timestamp <= event_mapping[event_id].bet_closure_time, "Bet time expired");
-        // require(betting_amount >= 10 ** 19 && betting_amount <= 5 * 10 ** 22, "Invalid bet amount");
+        require(msg.value >= 10 ether && msg.value <= 50000 ether, "Invalid bet amount");
 
         if ((keccak256(bytes(betting_response)) == keccak256(bytes("Yes")))) {
             betting_amount_pool[event_id]["Yes"] += msg.value;
